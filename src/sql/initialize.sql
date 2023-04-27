@@ -9,8 +9,8 @@ DROP TABLE IF EXISTS BaseTable CASCADE;
 CREATE table IF NOT EXISTS BaseTable
 (
     _id         uuid      NOT NULL DEFAULT uuid_generate_v4(),
-    _createTime timestamp NOT NULL DEFAULT now(),
-    _updateTime timestamp NOT NULL DEFAULT now(),
+    _createTime timestamptz NOT NULL DEFAULT now(),
+    _updateTime timestamptz NOT NULL DEFAULT now(),
     PRIMARY KEY (_id)
 );
 
@@ -37,7 +37,7 @@ DROP TABLE IF EXISTS F_FUTURE_TRADING CASCADE;
 CREATE TABLE IF NOT EXISTS F_FUTURE_TRADING
 (
     blockNumber     integer     NOT NULL,
-    timeStamp       timestamp   NOT NULL,
+    timeStamp       timestamptz   NOT NULL,
     hash            varchar(66) NOT NULL,
     gasFee          numeric     NOT NULL,
     product         varchar,
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS F_FUTURE_PRICE
 (
     blockNumber     integer     NOT NULL,
     hash            varchar(66) NOT NULL,
-    timeStamp       timestamp   NOT NULL,
+    timeStamp       timestamptz   NOT NULL,
     gasFee          numeric     NOT NULL,
     walletAddress   varchar(42) NOT NULL,
     chainId         integer     NOT NULL,
@@ -105,7 +105,7 @@ DROP TABLE IF EXISTS B_SETTLEMENT_REBATE CASCADE;
 CREATE TABLE IF NOT EXISTS B_SETTLEMENT_REBATE
 (
     settlementDate     date        NOT NULL,
-    paymentTime        timestamp,
+    paymentTime        timestamptz,
     walletAddress      varchar(42) NOT NULL,
     tgName             varchar,
     chainId            integer     NOT NULL,
@@ -123,7 +123,7 @@ DROP TABLE IF EXISTS B_SETTLEMENT_LEVEL2 CASCADE;
 CREATE TABLE IF NOT EXISTS B_SETTLEMENT_LEVEL2
 (
     settlementDate     date        NOT NULL,
-    paymentTime        timestamp,
+    paymentTime        timestamptz,
     walletAddress      varchar(42) NOT NULL,
     tgName             varchar,
     chainId            integer     NOT NULL,
@@ -202,7 +202,7 @@ CREATE TABLE IF NOT EXISTS F_USER_RELATIONSHIP
     invitationMethod     varchar,
     rewardType           varchar,
     status               varchar DEFAULT 'invited',
-    invitationDate       timestamp,
-    uninvitedTime        timestamp,
+    invitationDate       timestamptz,
+    uninvitedTime        timestamptz,
     UNIQUE (inviterWalletAddress, inviteeWalletAddress)
 ) INHERITS (BaseTable);
