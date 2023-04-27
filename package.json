@@ -1,0 +1,14 @@
+{
+  "name": "datastore",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "@ethersproject/bignumber": "^5.7.0",
+    "node-fetch": "^3.3.1",
+    "postgres": "^3.3.4"
+  }
+}
