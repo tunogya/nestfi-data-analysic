@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@ethersproject/bignumber": "^5.7.0",
+    "dotenv": "^16.0.3",
     "node-fetch": "^3.3.1",
     "postgres": "^3.3.4"
   }

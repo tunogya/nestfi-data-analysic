@@ -12,6 +12,9 @@ import handleBuyLog from "./lib/logs/Buy.js";
 import handleLiquidateLog from "./lib/logs/Liquidate.js";
 import handleSellLog from "./lib/logs/Sell.js";
 import handleNewBuyRequestWithUsdt from "./lib/tx/newBuyRequestWithUsdt.js";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 class BlockchainData {
   constructor(CONTRACT_ADDRESS, API_KEY) {
@@ -166,10 +169,15 @@ class Main {
   constructor() {
     this.blockchainData = new BlockchainData(
         '0x02904e03937E6a36D475025212859f1956BeC3f0',
-        'NCEAAHGJG6VP3AGJ6QTXHRAKNS1ZFIZG5V');
+        process.env.BSCSCAN_API_KEY);
   }
   
   async run() {
+    // check bscscan api key
+    if (!process.env.BSCSCAN_API_KEY) {
+      console.log('please set BSCSCAN_API_KEY')
+      process.exit(0)
+    }
     const startBlockSucceed = await this.blockchainData.fetchStartBlock();
     if (!startBlockSucceed) {
       console.log('main function executed failed')

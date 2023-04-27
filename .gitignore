@@ -1,3 +1,4 @@
 /.idea/
 /datastore.iml
 /node_modules
+.env

@@ -1,11 +1,14 @@
 import postgres from 'postgres';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const sql = postgres({
-  host: 'localhost',
-  port: 55000,
-  database: 'postgres',
-  username: 'postgres',
-  password: 'postgrespw',
+  host: process.env.POSTGRES_HOST || 'localhost',
+  port: process.env.POSTGRES_PORT || 5432,
+  database: process.env.POSTGRES_DB || 'postgres',
+  username: process.env.POSTGRES_USER || 'postgres',
+  password: process.env.POSTGRES_PASSWORD || 'postgres',
 })
 
 export const saveFuturePrice = async (data) => {
