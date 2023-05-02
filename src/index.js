@@ -256,7 +256,6 @@ const scheduleCronstyle = () => {
       console.log('scheduleCronstyle:' + new Date())
       main.run().finally(() => {
         console.log('main function executed finally')
-        sql.end()
       })
     })
   } catch (e) {
