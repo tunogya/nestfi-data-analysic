@@ -252,14 +252,14 @@ const main = new Main();
 
 const scheduleCronstyle = () => {
   try {
-    schedule.scheduleJob('*/10 * * * *', () => {
+    schedule.scheduleJob('*/5 * * * *', () => {
       console.log('scheduleCronstyle:' + new Date())
       main.run().finally(() => {
-        console.log('main function executed finally')
+        console.log('scheduleCronstyle executed finally:' + new Date())
       })
     })
   } catch (e) {
-    console.log('scheduleCronstyle:' + e)
+    console.log('scheduleCronstyle error:' + e)
     process.exit(0)
   }
 }
