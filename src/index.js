@@ -13,6 +13,7 @@ import handleLiquidateLog from "./lib/logs/Liquidate.js";
 import handleSellLog from "./lib/logs/Sell.js";
 import handleNewBuyRequestWithUsdt from "./lib/tx/newBuyRequestWithUsdt.js";
 import dotenv from 'dotenv';
+import schedule from "node-schedule";
 
 dotenv.config();
 
@@ -248,8 +249,20 @@ class Main {
 }
 
 const main = new Main();
-main.run().finally(() => {
-  console.log('main function executed finally')
-  sql.end()
-  process.exit(0)
-})
+
+const scheduleCronstyle = () => {
+  try {
+    schedule.scheduleJob('*/10 * * * *', () => {
+      console.log('scheduleCronstyle:' + new Date())
+      main.run().finally(() => {
+        console.log('main function executed finally')
+        sql.end()
+      })
+    })
+  } catch (e) {
+    console.log('scheduleCronstyle:' + e)
+    process.exit(0)
+  }
+}
+
+scheduleCronstyle();
