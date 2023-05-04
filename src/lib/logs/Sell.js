@@ -2,9 +2,8 @@
 // Sell (uint256 orderIndex, uint256 amount, address owner, uint256 value)
 // address 0x02904e03937e6a36d475025212859f1956bec3f0
 import {BigNumber} from "@ethersproject/bignumber";
-import sql from "../db.js";
 import getDataFromLog from "../getDataFromLog.js";
-import {saveFutureTrading, getPreviousOrderState, getExecutePrice} from "../db.js";
+import knexInstance, {saveFutureTrading, getPreviousOrderState, getExecutePrice} from "../db.js";
 
 const handleSellLog = async (log, chainid) => {
   const {blocknumber, timestamp, hash, gasfee} = getDataFromLog(log);
@@ -21,14 +20,11 @@ const handleSellLog = async (log, chainid) => {
     const {product, leverage, direction, stoplossprice, takeprofitprice, currency} = order;
     
     // 获取实际开单时的价格
-    const open_orders = await sql`
-        SELECT *
-        FROM f_future_trading
-        WHERE positionindex = ${positionindex}
-          AND (ordertype = 'MARKET_ORDER_FEE'
-            OR ordertype = 'LIMIT_ORDER_FEE')
-          AND status = true;
-    `
+    const open_orders = await knexInstance('f_future_trading')
+      .where('positionindex', positionindex)
+      .whereIn('ordertype', ['MARKET_ORDER_FEE', 'LIMIT_ORDER_FEE'])
+      .andWhere('status', true);
+    
     if (open_orders.length === 0) return;
     const baseprice = open_orders[0].orderprice
     
@@ -46,13 +42,10 @@ const handleSellLog = async (log, chainid) => {
     const isTakeProfit = direction ? orderprice >= baseprice : orderprice < baseprice;
     
     try {
-      const orders = await sql`
-          SELECT *
-          FROM f_future_trading
-          WHERE positionindex = ${positionindex}
-            AND ordertype = 'MARKET_CLOSE_REQUEST'
-            AND status = true;
-      `
+      const orders = await knexInstance('f_future_trading')
+        .where('positionindex', positionindex)
+        .andWhere('ordertype', 'MARKET_CLOSE_REQUEST')
+        .andWhere('status', true);
       // 判断是否是通过止盈止损来关单的，如果是则需要额外扣除15执行费
       if (orders.length > 0) {
         // 用户市价卖出

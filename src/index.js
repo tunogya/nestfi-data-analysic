@@ -1,6 +1,5 @@
 import fetch from 'node-fetch';
 import {BigNumber} from "@ethersproject/bignumber";
-import sql from "./lib/db.js";
 import handleNewBuyRequest from "./lib/tx/newBuyRequest.js";
 import handleCancelBuyRequest from "./lib/tx/cancelBuyRequest.js";
 import handleAdd from "./lib/tx/add.js";
@@ -14,6 +13,7 @@ import handleSellLog from "./lib/logs/Sell.js";
 import handleNewBuyRequestWithUsdt from "./lib/tx/newBuyRequestWithUsdt.js";
 import dotenv from 'dotenv';
 import schedule from "node-schedule";
+import knexInstance from "./lib/db.js";
 
 dotenv.config();
 
@@ -29,16 +29,8 @@ class BlockchainData {
   async fetchStartBlock() {
     console.log('connect db and fetch startblock...')
     try {
-      const res1 = await sql`
-          SELECT blocknumber
-          FROM f_future_trading
-          ORDER BY blocknumber DESC
-          LIMIT 1;`
-      const res2 = await sql`
-          SELECT blocknumber
-          FROM f_future_price
-          ORDER BY blocknumber DESC
-          LIMIT 1;`
+      const res1 = await knexInstance('f_future_trading').select('blocknumber').orderBy('blocknumber', 'desc').limit(1);
+      const res2 = await knexInstance('f_future_price').select('blocknumber').orderBy('blocknumber', 'desc').limit(1);
       if (res1.length === 0 || res2.length === 0) {
         this.startBlock = 0;
       } else {
@@ -264,4 +256,8 @@ const scheduleCronstyle = () => {
   }
 }
 
-scheduleCronstyle();
+// scheduleCronstyle();
+
+main.run().finally(() => {
+  console.log('scheduleCronstyle executed finally:' + new Date())
+})

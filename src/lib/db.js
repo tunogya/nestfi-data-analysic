@@ -1,28 +1,47 @@
-import postgres from 'postgres';
 import dotenv from 'dotenv';
+import knex from "knex";
 
 dotenv.config();
 
-const sql = postgres({
-  host: process.env.POSTGRES_HOST || 'localhost',
-  port: process.env.POSTGRES_PORT || 5432,
-  database: process.env.POSTGRES_DB || 'postgres',
-  username: process.env.POSTGRES_USER || 'postgres',
-  password: process.env.POSTGRES_PASSWORD || 'postgres',
-})
+const knexInstance = knex({
+  client: 'mysql',
+  connection: {
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_SCHEMA
+  }
+});
 
 export const saveFuturePrice = async (data) => {
-  const {blocknumber, hash, timestamp, gasfee, walletaddress, chainid, ethprice, btcprice, bnbprice, status, positionindices} = data;
-  const positionindicesstring = `{${positionindices.join(',')}}`
+  const {
+    blocknumber,
+    hash,
+    timestamp,
+    gasfee,
+    walletaddress,
+    chainid,
+    ethprice,
+    btcprice,
+    bnbprice,
+    status,
+    positionindices
+  } = data;
+  const positionindicesstring = `[${positionindices.join(',')}]`
   try {
-    await sql`
-        INSERT INTO f_future_price
-        (blocknumber, hash, timestamp, gasfee, walletaddress, chainid, ethprice, btcprice, bnbprice, status,
-         positionindices)
-        VALUES (${blocknumber}, ${hash}, ${timestamp}, ${gasfee}, ${walletaddress}, ${chainid}, ${ethprice},
-                ${btcprice}, ${bnbprice}, ${status}, ${positionindicesstring})
-        ON CONFLICT (hash, chainid) DO NOTHING;
-    `
+    knexInstance('f_future_price').insert({
+      blocknumber,
+      hash,
+      timestamp,
+      gasfee,
+      walletaddress,
+      chainid,
+      ethprice,
+      btcprice,
+      bnbprice,
+      status,
+    }).onConflict(['hash', 'chainid']).ignore()
     // console.log('save Future Price success')
   } catch (e) {
     console.log(`save Future Price error`)
@@ -54,16 +73,28 @@ export const saveFutureTrading = async (data) => {
     status
   } = data;
   try {
-    await sql`
-        INSERT INTO f_future_trading
-        (blocknumber, hash, timestamp, gasfee, product, currency, chainid, positionindex, leverage, orderprice, ordertype,
-         direction,
-         margin, volume, stoplossprice, takeprofitprice, fees, executionfees, walletaddress, status)
-        VALUES (${blocknumber}, ${hash}, ${timestamp}, ${gasfee}, ${product}, ${currency}, ${chainid}, ${positionindex}, ${leverage},
-                ${orderprice}, ${ordertype}, ${direction}, ${margin}, ${volume}, ${stoplossprice}, ${takeprofitprice},
-                ${fees}, ${executionfees}, ${walletaddress}, ${status})
-        ON CONFLICT (hash, ordertype) DO NOTHING;
-    `
+    await knexInstance('f_future_trading').insert({
+      blocknumber,
+      hash,
+      timestamp,
+      gasfee,
+      product,
+      currency,
+      chainid,
+      positionindex,
+      leverage,
+      orderprice,
+      ordertype,
+      direction,
+      margin,
+      volume,
+      stoplossprice,
+      takeprofitprice,
+      fees,
+      executionfees,
+      walletaddress,
+      status
+    }).onConflict(['hash', 'ordertype']).ignore()
     // console.log('save FutureTrading success')
   } catch (e) {
     console.log('--save FutureTrading error')
@@ -72,12 +103,8 @@ export const saveFutureTrading = async (data) => {
 }
 
 export const getExecutePrice = async (hash, chainId, product) => {
-  const prices = await sql`
-      SELECT *
-      FROM f_future_price
-      WHERE hash = ${hash}
-        AND chainid = ${chainId}
-  `
+  const prices = await knexInstance('f_future_price').where({hash, chainid: chainId})
+  
   if (prices.length === 0) return;
   let orderPrice = null
   const price = prices[0];
@@ -93,15 +120,13 @@ export const getExecutePrice = async (hash, chainId, product) => {
 
 export const getPreviousOrderState = async (positionindex, chainid, timestamp) => {
   // 寻找同一单号的最新信息，timestamp < timeStamp, 倒序排列
-  const orders = await sql`
-      SELECT *
-      FROM f_future_trading
-      WHERE positionindex = ${positionindex}
-        AND chainid = ${chainid}
-        AND timestamp < ${timestamp}
-        AND status = true
-      ORDER BY timestamp DESC
-  `
+  const orders = await knexInstance('f_future_trading').where({
+    positionindex,
+    chainid
+  })
+      .where('timestamp', '<', timestamp)
+      .where({status: true})
+      .orderBy('timestamp', 'desc')
   if (orders.length === 0) {
     console.log(`db error: positionIndex: ${positionindex}, chainId: ${chainid}, timeStamp: ${timestamp}`)
     return null
@@ -109,4 +134,4 @@ export const getPreviousOrderState = async (positionindex, chainid, timestamp) =
   return orders[0];
 }
 
-export default sql
+export default knexInstance

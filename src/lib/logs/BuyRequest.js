@@ -2,8 +2,8 @@
 // BuyRequest (uint256 index, uint256 amount, address owner)
 // address 0x02904e03937e6a36d475025212859f1956bec3f0
 import {BigNumber} from "@ethersproject/bignumber";
-import sql, {getPreviousOrderState} from "../db.js";
 import getDataFromLog from "../getDataFromLog.js";
+import knexInstance from "../db.js";
 
 const handleBuyRequestLog = async (log, chainid) => {
   const {hash} = getDataFromLog(log);
@@ -13,12 +13,11 @@ const handleBuyRequestLog = async (log, chainid) => {
   const amount = BigNumber.from('0x' + log.data.slice(66, 130)).toNumber() / 10000;
   
   try {
-    const orders = await sql`
-        SELECT *
-        FROM f_future_trading
-        WHERE hash = ${hash}
-          AND chainid = ${chainid}
-    `
+    const orders = await knexInstance('f_future_trading')
+        .where({
+          hash,
+          chainid,
+        })
     if (orders.length === 0) {
       console.log('BuyRequest not found')
       process.exit(1)
@@ -26,14 +25,16 @@ const handleBuyRequestLog = async (log, chainid) => {
     const order = orders[0];
     const {leverage} = order;
     
-    await sql`
-        UPDATE f_future_trading
-        SET positionindex = ${positionindex},
-            margin        = ${amount},
-            volume        = ${amount * leverage}
-        WHERE hash = ${hash}
-          AND chainid = ${chainid}
-    `
+    await knexInstance('f_future_trading')
+        .where({
+          hash,
+          chainid,
+        })
+        .update({
+          positionindex,
+          margin: amount,
+          volume: amount * leverage,
+        })
     // console.log('update BuyRequest success')
   } catch (e) {
     console.log(e)
