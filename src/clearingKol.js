@@ -3,13 +3,21 @@ class Main {
   
   }
   
-  async clearing(date) {
+  async clearing(timestamp) {
     // 1. 查询 date(UTC) 当天的所有交易，筛选出未被清算的所有平仓和爆仓的交易
     // MARKET_CLOSE_FEE
     // TP_ORDER_FEE
     // SL_ORDER_FEE
     // MARKET_LIQUIDATION
     // 开仓交易需要被清算
+    // MARKET_ORDER_FEE
+    // LIMIT_ORDER_FEE
+    const openOrders = await knexInstance('f_future_trading')
+      .where('timeStamp', '>=', new Date(date))
+      .where('timeStamp', '<',  new Date(date) + 24 * 60 * 60)
+    
+    
+    
     
     // 2. 根据单号持有人地址，查询他们所有对应，尚在有效期内的邀请关系
     // status = invited
