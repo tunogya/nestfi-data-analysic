@@ -1,7 +1,7 @@
 SET SQL_MODE='ALLOW_INVALID_DATES';
 
 -- 创建一个F_FUTURE_TRADING表，继承BaseTable，用于存储交易记录
-DROP TABLE IF EXISTS f_future_trading CASCADE;
+DROP TABLE IF EXISTS F_FUTURE_TRADING CASCADE;
 CREATE TABLE IF NOT EXISTS F_FUTURE_TRADING
 (
     _id             serial      NOT NULL PRIMARY KEY,
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS F_FUTURE_TRADING
     UNIQUE (hash, orderType)
 );
 
-DROP TABLE IF EXISTS f_future_price CASCADE;
+DROP TABLE IF EXISTS F_FUTURE_PRICE CASCADE;
 CREATE TABLE IF NOT EXISTS F_FUTURE_PRICE
 (
     _id           serial      NOT NULL PRIMARY KEY,
@@ -48,4 +48,22 @@ CREATE TABLE IF NOT EXISTS F_FUTURE_PRICE
     bnbPrice      numeric     NOT NULL,
     status        boolean     NOT NULL,
     UNIQUE (hash, chainId)
+);
+
+DROP TABLE IF EXISTS B_CLEARING_KOL CASCADE;
+CREATE TABLE IF NOT EXISTS B_CLEARING_KOL
+(
+    _id           serial      NOT NULL PRIMARY KEY,
+    _createTime   timestamp DEFAULT CURRENT_TIMESTAMP,
+    _updateTime   timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    date          date   NOT NULL,
+    walletAddress varchar(42) NOT NULL,
+    relationshipLevel integer NOT NULL,
+    ratio numeric NOT NULL,
+    chainId       integer     NOT NULL,
+    tradingVolume numeric,
+    fees numeric,
+    dailyActiveUsers integer,
+    dailyUserTransactions integer,
+    dailyDestruction numeric
 )

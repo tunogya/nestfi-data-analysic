@@ -38,7 +38,7 @@ export const getPreviousOrderState = async (positionindex, chainid, timestamp) =
     positionindex,
     chainid
   })
-      .where('timestamp', '<', timestamp)
+      .where('timestamp', '<', new Date(timestamp * 1000))
       .where({status: true})
       .orderBy('timestamp', 'desc')
   if (orders.length === 0) {

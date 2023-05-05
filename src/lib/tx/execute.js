@@ -22,7 +22,6 @@ const handleExecute = async (tx, chainid) => {
       bnbprice,
       status,
     }).onConflict(['hash', 'chainid']).ignore()
-    console.log('save Future Price success')
   } catch (e) {
     console.log(`save Future Price error`)
     console.log(e)
