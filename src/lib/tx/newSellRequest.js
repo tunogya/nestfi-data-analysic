@@ -15,7 +15,7 @@ const handleSellRequest = async (tx, chainid) => {
     await knexInstance('f_future_trading').insert({
       blocknumber,
       hash,
-      timestamp,
+      timestamp: new Date(timestamp * 1000),
       gasfee,
       product,
       currency,

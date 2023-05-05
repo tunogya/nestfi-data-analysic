@@ -38,7 +38,7 @@ class BlockchainData {
       console.log('--set startblock to', this.startBlock, 'done\n')
       return true;
     } catch (e) {
-      console.log('--fetch startblock failed')
+      console.log('--fetch startblock failed', e)
       return false;
     }
   }
