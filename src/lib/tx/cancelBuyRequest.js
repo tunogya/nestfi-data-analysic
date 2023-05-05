@@ -2,39 +2,39 @@ import {BigNumber} from "@ethersproject/bignumber";
 import getDataFromTx from "../getDataFromTx.js";
 import knexInstance, {getPreviousOrderState} from "../db.js";
 
-const handleCancelBuyRequest = async (tx, chainid) => {
-  const {blocknumber, gasfee, hash, status, timestamp, walletaddress} = getDataFromTx(tx);
+const handleCancelBuyRequest = async (tx, chainId) => {
+  const {blockNumber, gasFee, hash, status, timeStamp, walletAddress} = getDataFromTx(tx);
   
   // Function: cancelBuyRequest(uint256 orderIndex)
-  const positionindex = BigNumber.from('0x' + tx.input.slice(10, 74)).toNumber();
+  const positionIndex = BigNumber.from('0x' + tx.input.slice(10, 74)).toNumber();
   
-  const order = await getPreviousOrderState(positionindex, chainid, timestamp);
+  const order = await getPreviousOrderState(positionIndex, chainId, timeStamp);
   if (!order) return;
-  const {product, leverage, direction, margin, volume, stoplossprice, takeprofitprice, currency} = order;
+  const {product, leverage, direction, margin, volume, stopLossPrice, takeProfitPrice, currency} = order;
   
   try {
     await knexInstance('f_future_trading').insert({
-      blocknumber,
+      blockNumber,
       hash,
-      timestamp: new Date(timestamp * 1000),
-      gasfee,
+      timeStamp: new Date(timeStamp * 1000),
+      gasFee,
       product,
       currency,
-      chainid,
-      positionindex,
+      chainId,
+      positionIndex,
       leverage,
-      orderprice: null,
-      ordertype: "LIMIT_CANCEL",
+      orderPrice: null,
+      orderType: "LIMIT_CANCEL",
       direction,
       margin,
       volume,
-      stoplossprice,
-      takeprofitprice,
+      stopLossPrice,
+      takeProfitPrice,
       fees: 0,
-      executionfees: 0,
-      walletaddress,
+      executionFees: 0,
+      walletAddress,
       status
-    }).onConflict(['hash', 'ordertype']).ignore()
+    }).onConflict(['hash', 'orderType']).ignore()
     // console.log('save FutureTrading success')
   } catch (e) {
     console.log('--save FutureTrading error')

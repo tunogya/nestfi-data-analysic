@@ -2,9 +2,9 @@ import {BigNumber} from "@ethersproject/bignumber";
 import getDataFromTx from "../getDataFromTx.js";
 import knexInstance from "../db.js";
 
-const handleNewBuyRequestWithUsdt = async (tx, chainid) => {
-  const {blocknumber, gasfee, hash, status, timestamp, walletaddress} = getDataFromTx(tx);
-  const positionindex = null;
+const handleNewBuyRequestWithUsdt = async (tx, chainId) => {
+  const {blockNumber, gasFee, hash, status, timeStamp, walletAddress} = getDataFromTx(tx);
+  const positionIndex = null;
   // Function: newBuyRequestWithUsdt(
   // uint256 usdtAmount,       // 10-74
   // uint256 minNestAmount,    // 74-138
@@ -27,35 +27,35 @@ const handleNewBuyRequestWithUsdt = async (tx, chainid) => {
   }
   const leverage = BigNumber.from('0x' + tx.input.slice(202, 266)).toNumber();
   const direction = BigNumber.from('0x' + tx.input.slice(266, 330)).eq(1);
-  const orderprice = BigNumber.from('0x' + tx.input.slice(330, 394)).div(BigNumber.from(10).pow(14)).toNumber() / 10000;
+  const orderPrice = BigNumber.from('0x' + tx.input.slice(330, 394)).div(BigNumber.from(10).pow(14)).toNumber() / 10000;
   
   const limit = BigNumber.from('0x' + tx.input.slice(394, 458)).eq(1);
-  const stoplossprice = BigNumber.from('0x' + tx.input.slice(458, 522)).div(BigNumber.from(10).pow(16)).toNumber() / 100;
-  const takeprofitprice = BigNumber.from('0x' + tx.input.slice(522, 586)).div(BigNumber.from(10).pow(16)).toNumber() / 100;
+  const stopLossPrice = BigNumber.from('0x' + tx.input.slice(458, 522)).div(BigNumber.from(10).pow(16)).toNumber() / 100;
+  const takeProfitPrice = BigNumber.from('0x' + tx.input.slice(522, 586)).div(BigNumber.from(10).pow(16)).toNumber() / 100;
   
   try {
     await knexInstance('f_future_trading').insert({
-      blocknumber,
+      blockNumber,
       hash,
-      timestamp: new Date(timestamp * 1000),
-      gasfee,
+      timeStamp: new Date(timeStamp * 1000),
+      gasFee,
       product,
-      chainid,
-      positionindex,
+      chainId,
+      positionIndex,
       leverage,
-      orderprice,
+      orderPrice,
       currency: 'USDT',
-      ordertype: limit ? "LIMIT_REQUEST" : "MARKET_REQUEST",
+      orderType: limit ? "LIMIT_REQUEST" : "MARKET_REQUEST",
       direction,
       margin: null,
       volume: null,
-      stoplossprice,
-      takeprofitprice,
+      stopLossPrice,
+      takeProfitPrice,
       fees: 0,
-      executionfees: 0,
-      walletaddress,
+      executionFees: 0,
+      walletAddress,
       status
-    }).onConflict(['hash', 'ordertype']).ignore()
+    }).onConflict(['hash', 'orderType']).ignore()
     // console.log('save FutureTrading success')
   } catch (e) {
     console.log('--save FutureTrading error')

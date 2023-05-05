@@ -4,8 +4,9 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "cron-start": "pm2 start src/index.js --name nestfiasync --cron '*/5 * * * *'"
+    "asyncBlock": "node src/asyncBlock.js",
+    "cronAsyncBlock": "pm2 start src/asyncBlock.js --name cronAsyncBlock --cron '*/5 * * * *'",
+    "clearing": "node src/clearing.js"
   },
   "dependencies": {
     "@ethersproject/bignumber": "^5.7.0",

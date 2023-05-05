@@ -5,18 +5,18 @@ import {BigNumber} from "@ethersproject/bignumber";
 import getDataFromLog from "../getDataFromLog.js";
 import knexInstance from "../db.js";
 
-const handleBuyRequestLog = async (log, chainid) => {
+const handleBuyRequestLog = async (log, chainId) => {
   const {hash} = getDataFromLog(log);
   // Buy (uint256 orderIndex, uint256 amount, address owner)
   // 获取positionIndex，通过hash来匹配更新之前的 BuyRequest 记录
-  const positionindex = BigNumber.from(log.data.slice(0, 66)).toNumber();
+  const positionIndex = BigNumber.from(log.data.slice(0, 66)).toNumber();
   const amount = BigNumber.from('0x' + log.data.slice(66, 130)).toNumber() / 10000;
   
   try {
     const orders = await knexInstance('f_future_trading')
         .where({
           hash,
-          chainid,
+          chainId,
         })
     if (orders.length === 0) {
       console.log('BuyRequest not found')
@@ -28,10 +28,10 @@ const handleBuyRequestLog = async (log, chainid) => {
     await knexInstance('f_future_trading')
         .where({
           hash,
-          chainid,
+          chainId,
         })
         .update({
-          positionindex,
+          positionIndex,
           margin: amount,
           volume: amount * leverage,
         })

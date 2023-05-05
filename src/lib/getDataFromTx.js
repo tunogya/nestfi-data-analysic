@@ -1,20 +1,20 @@
 import {BigNumber} from "@ethersproject/bignumber";
 
 const getDataFromTx = (tx) => {
-  const blocknumber = Number(tx.blockNumber);
+  const blockNumber = Number(tx.blockNumber);
   const hash = tx.hash;
-  const timestamp = Number(tx.timeStamp);
-  const gasfee = BigNumber.from(tx.gasUsed).mul(BigNumber.from(tx.gasPrice)).div(BigNumber.from(10).pow(12)).toNumber() / 1000000;
+  const timeStamp = Number(tx.timeStamp);
+  const gasFee = BigNumber.from(tx.gasUsed).mul(BigNumber.from(tx.gasPrice)).div(BigNumber.from(10).pow(12)).toNumber() / 1000000;
   const status = tx.isError === '0';
-  const walletaddress = tx.from;
+  const walletAddress = tx.from;
   
   return {
-    blocknumber,
+    blockNumber,
     hash,
-    timestamp,
-    gasfee,
+    timeStamp,
+    gasFee,
     status,
-    walletaddress
+    walletAddress
   }
 }
 

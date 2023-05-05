@@ -5,45 +5,45 @@ import {BigNumber} from "@ethersproject/bignumber";
 import getDataFromLog from "../getDataFromLog.js";
 import knexInstance, {getExecutePrice, getPreviousOrderState} from "../db.js";
 
-const handleLiquidateLog = async (log, chainid) => {
-  const {blocknumber, timestamp, hash, gasfee} = getDataFromLog(log);
+const handleLiquidateLog = async (log, chainId) => {
+  const {blockNumber, timeStamp, hash, gasFee} = getDataFromLog(log);
   
   // Liquidate (uint256 orderIndex, address owner, uint256 reward)
-  const positionindex = BigNumber.from(log.data.slice(0, 66)).toNumber();
-  const ordertype = 'MARKET_LIQUIDATION'
+  const positionIndex = BigNumber.from(log.data.slice(0, 66)).toNumber();
+  const orderType = 'MARKET_LIQUIDATION'
   // 从data中取出owner，且只保留40位
-  const walletaddress = '0x' + log.data.slice(66, 130).slice(24);
+  const walletAddress = '0x' + log.data.slice(66, 130).slice(24);
   
-  const order = await getPreviousOrderState(positionindex, chainid, timestamp);
+  const order = await getPreviousOrderState(positionIndex, chainId, timeStamp);
   if (!order) return;
   
-  const { product, leverage, margin, direction, stoplossprice, takeprofitprice, currency } = order;
-  const orderprice = await getExecutePrice(hash, chainid, product);
-  if (!orderprice) return;
+  const { product, leverage, margin, direction, stopLossPrice, takeProfitPrice, currency } = order;
+  const orderPrice = await getExecutePrice(hash, chainId, product);
+  if (!orderPrice) return;
 
   try {
     await knexInstance('f_future_trading').insert({
-      blocknumber,
+      blockNumber,
       hash,
-      timestamp: new Date(timestamp * 1000),
-      gasfee,
+      timeStamp: new Date(timeStamp * 1000),
+      gasFee,
       product,
       currency,
-      chainid,
-      positionindex,
+      chainId,
+      positionIndex,
       leverage,
-      orderprice,
-      ordertype,
+      orderPrice,
+      orderType,
       direction,
       margin,
       volume: 0,
-      stoplossprice,
-      takeprofitprice,
+      stopLossPrice,
+      takeProfitPrice,
       fees: 0,
-      executionfees: 0,
-      walletaddress,
+      executionFees: 0,
+      walletAddress,
       status: true
-    }).onConflict(['hash', 'ordertype']).ignore()
+    }).onConflict(['hash', 'orderType']).ignore()
     // console.log('save FutureTrading success')
   } catch (e) {
     console.log('--save FutureTrading error')

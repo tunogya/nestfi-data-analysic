@@ -14,10 +14,10 @@ const knexInstance = knex({
   }
 });
 
-export const getExecutePrice = async (hash, chainid, product) => {
+export const getExecutePrice = async (hash, chainId, product) => {
   const prices = await knexInstance('f_future_price')
       .select('ethprice', 'btcprice', 'bnbprice')
-      .where({hash, chainid})
+      .where({hash, chainId})
   
   if (prices.length === 0) return;
   let orderPrice = null
@@ -32,17 +32,17 @@ export const getExecutePrice = async (hash, chainid, product) => {
   return orderPrice
 }
 
-export const getPreviousOrderState = async (positionindex, chainid, timestamp) => {
-  // 寻找同一单号的最新信息，timestamp < timeStamp, 倒序排列
+export const getPreviousOrderState = async (positionIndex, chainId, timeStamp) => {
+  // 寻找同一单号的最新信息，timeStamp < timeStamp, 倒序排列
   const orders = await knexInstance('f_future_trading').where({
-    positionindex,
-    chainid
+    positionIndex,
+    chainId
   })
-      .where('timestamp', '<', new Date(timestamp * 1000))
+      .where('timeStamp', '<', new Date(timeStamp * 1000))
       .where({status: true})
-      .orderBy('timestamp', 'desc')
+      .orderBy('timeStamp', 'desc')
   if (orders.length === 0) {
-    console.log(`db error: positionIndex: ${positionindex}, chainId: ${chainid}, timeStamp: ${timestamp}`)
+    console.log(`db error: positionIndex: ${positionIndex}, chainId: ${chainId}, timeStamp: ${timeStamp}`)
     return null
   }
   return orders[0];
