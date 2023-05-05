@@ -17,7 +17,7 @@ const handleExecute = async (tx, chainid) => {
   }
   
   try {
-    knexInstance('f_future_price').insert({
+    await knexInstance('f_future_price').insert({
       blocknumber,
       hash,
       timestamp,
@@ -29,11 +29,10 @@ const handleExecute = async (tx, chainid) => {
       bnbprice,
       status,
     }).onConflict(['hash', 'chainid']).ignore()
-    // console.log('save Future Price success')
+    console.log('save Future Price success')
   } catch (e) {
     console.log(`save Future Price error`)
     console.log(e)
   }
-  
 }
 export default handleExecute
