@@ -29,19 +29,16 @@ const handleSellLog = async (log, chainId) => {
       .andWhere('status', true);
     
     if (open_orders.length === 0) {
-      console.log('open_orders is null')
       return
     }
-    const basePrice = open_orders[0].orderPrice
+    const basePrice = open_orders[0].orderPrice;
     if (!basePrice) {
-      console.log('basePrice is null')
       return
     }
     
     // 获取sell的执行价格，通过 execute 获取实际的卖出价格
     const orderPrice = await getExecutePrice(hash, chainId, product);
     if (!orderPrice) {
-      console.log('orderPrice is null')
       return
     }
     
