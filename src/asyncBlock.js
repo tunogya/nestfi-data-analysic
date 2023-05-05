@@ -243,5 +243,4 @@ const main = new Main();
 
 main.run().finally(() => {
   console.log('scheduleCronstyle executed finally:' + new Date())
-  process.exit(0)
 })
