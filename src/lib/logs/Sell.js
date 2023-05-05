@@ -3,7 +3,7 @@
 // address 0x02904e03937e6a36d475025212859f1956bec3f0
 import {BigNumber} from "@ethersproject/bignumber";
 import getDataFromLog from "../getDataFromLog.js";
-import knexInstance, {saveFutureTrading, getPreviousOrderState, getExecutePrice} from "../db.js";
+import knexInstance, {getPreviousOrderState, getExecutePrice} from "../db.js";
 
 const handleSellLog = async (log, chainid) => {
   const {blocknumber, timestamp, hash, gasfee} = getDataFromLog(log);
@@ -49,74 +49,92 @@ const handleSellLog = async (log, chainid) => {
       // 判断是否是通过止盈止损来关单的，如果是则需要额外扣除15执行费
       if (orders.length > 0) {
         // 用户市价卖出
-        await saveFutureTrading({
-          blocknumber,
-          hash,
-          timestamp,
-          gasfee,
-          product,
-          currency,
-          chainid,
-          positionindex,
-          leverage,
-          orderprice,
-          ordertype: 'MARKET_CLOSE',
-          direction,
-          margin,
-          volume,
-          stoplossprice,
-          takeprofitprice,
-          fees,
-          executionfees: 0,
-          walletaddress,
-          status: true
-        })
+        try {
+          await knexInstance('f_future_trading').insert({
+            blocknumber,
+            hash,
+            timestamp,
+            gasfee,
+            product,
+            currency,
+            chainid,
+            positionindex,
+            leverage,
+            orderprice,
+            ordertype: 'MARKET_CLOSE',
+            direction,
+            margin,
+            volume,
+            stoplossprice,
+            takeprofitprice,
+            fees,
+            executionfees: 0,
+            walletaddress,
+            status: true
+          }).onConflict(['hash', 'ordertype']).ignore()
+          // console.log('save FutureTrading success')
+        } catch (e) {
+          console.log('--save FutureTrading error')
+          console.log(e)
+        }
       } else {
         // 用户限价卖出
-        await saveFutureTrading({
-          blocknumber,
-          hash,
-          timestamp,
-          gasfee,
-          product,
-          currency,
-          chainid,
-          positionindex,
-          leverage,
-          orderprice,
-          ordertype: isTakeProfit ? 'TP_ORDER_FEE' : 'SL_ORDER_FEE',
-          direction,
-          margin,
-          volume,
-          stoplossprice,
-          takeprofitprice,
-          fees,
-          executionfees: 0,
-          walletaddress,
-          status: true
-        })
-        await saveFutureTrading({
-          blocknumber,
-          hash,
-          timestamp,
-          gasfee,
-          product,
-          currency,
-          chainid,
-          positionindex,
-          leverage,
-          orderprice,
-          ordertype: isTakeProfit ? 'TP_ORDER_EXECUTION' : 'SL_ORDER_EXECUTION',
-          direction,
-          margin,
-          volume,
-          stoplossprice,
-          takeprofitprice,
-          fees: 0,
-          executionfees: 15,
-          walletaddress,
-          status: true
-        })
+        try {
+          await knexInstance('f_future_trading').insert({
+            blocknumber,
+            hash,
+            timestamp,
+            gasfee,
+            product,
+            currency,
+            chainid,
+            positionindex,
+            leverage,
+            orderprice,
+            ordertype: isTakeProfit ? 'TP_ORDER_FEE' : 'SL_ORDER_FEE',
+            direction,
+            margin,
+            volume,
+            stoplossprice,
+            takeprofitprice,
+            fees,
+            executionfees: 0,
+            walletaddress,
+            status: true
+          }).onConflict(['hash', 'ordertype']).ignore()
+          // console.log('save FutureTrading success')
+        } catch (e) {
+          console.log('--save FutureTrading error')
+          console.log(e)
+        }
+        try {
+          await knexInstance('f_future_trading').insert({
+            blocknumber,
+            hash,
+            timestamp,
+            gasfee,
+            product,
+            currency,
+            chainid,
+            positionindex,
+            leverage,
+            orderprice,
+            ordertype: isTakeProfit ? 'TP_ORDER_EXECUTION' : 'SL_ORDER_EXECUTION',
+            direction,
+            margin,
+            volume,
+            stoplossprice,
+            takeprofitprice,
+            fees: 0,
+            executionfees: 15,
+            walletaddress,
+            status: true
+          }).onConflict(['hash', 'ordertype']).ignore()
+          // console.log('save FutureTrading success')
+        } catch (e) {
+          console.log('--save FutureTrading error')
+          console.log(e)
+        }
       }
     } catch (e) {
       console.log(e)

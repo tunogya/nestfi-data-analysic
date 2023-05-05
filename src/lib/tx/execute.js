@@ -1,6 +1,6 @@
 import {BigNumber} from "@ethersproject/bignumber";
 import getDataFromTx from "../getDataFromTx.js";
-import {saveFuturePrice} from "../db.js";
+import knexInstance from "../db.js";
 
 const handleExecute = async (tx, chainid) => {
   const {blocknumber, gasfee, hash, status, timestamp, walletaddress} = getDataFromTx(tx);
@@ -16,9 +16,24 @@ const handleExecute = async (tx, chainid) => {
     positionindices.push(positionIndex)
   }
   
-  await saveFuturePrice({
-    blocknumber, hash, timestamp, gasfee, walletaddress, chainid, ethprice, btcprice, bnbprice, status, positionindices
-  })
+  try {
+    knexInstance('f_future_price').insert({
+      blocknumber,
+      hash,
+      timestamp,
+      gasfee,
+      walletaddress,
+      chainid,
+      ethprice,
+      btcprice,
+      bnbprice,
+      status,
+    }).onConflict(['hash', 'chainid']).ignore()
+    // console.log('save Future Price success')
+  } catch (e) {
+    console.log(`save Future Price error`)
+    console.log(e)
+  }
   
 }
 export default handleExecute

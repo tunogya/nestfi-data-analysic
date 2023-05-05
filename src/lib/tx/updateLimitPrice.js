@@ -1,6 +1,6 @@
 import {BigNumber} from "@ethersproject/bignumber";
 import getDataFromTx from "../getDataFromTx.js";
-import {saveFutureTrading, getPreviousOrderState} from "../db.js";
+import knexInstance, {getPreviousOrderState} from "../db.js";
 
 const handleUpdateLimitPrice = async (tx, chainid) => {
   const {blocknumber, gasfee, hash, status, timestamp, walletaddress} = getDataFromTx(tx);
@@ -12,28 +12,34 @@ const handleUpdateLimitPrice = async (tx, chainid) => {
   if (!order) return;
   const {product, leverage, direction, margin, volume, stoplossprice, takeprofitprice, currency} = order;
   
-  await saveFutureTrading({
-    blocknumber,
-    hash,
-    timestamp,
-    gasfee,
-    product,
-    currency,
-    chainid,
-    positionindex,
-    leverage,
-    orderprice,
-    ordertype: "LIMIT_EDIT",
-    direction,
-    margin,
-    volume,
-    stoplossprice,
-    takeprofitprice,
-    fees: 0,
-    executionfees: 0,
-    walletaddress,
-    status
-  })
+  try {
+    await knexInstance('f_future_trading').insert({
+      blocknumber,
+      hash,
+      timestamp,
+      gasfee,
+      product,
+      currency,
+      chainid,
+      positionindex,
+      leverage,
+      orderprice,
+      ordertype: "LIMIT_EDIT",
+      direction,
+      margin,
+      volume,
+      stoplossprice,
+      takeprofitprice,
+      fees: 0,
+      executionfees: 0,
+      walletaddress,
+      status
+    }).onConflict(['hash', 'ordertype']).ignore()
+    // console.log('save FutureTrading success')
+  } catch (e) {
+    console.log('--save FutureTrading error')
+    console.log(e)
+  }
 }
 
 export default handleUpdateLimitPrice;

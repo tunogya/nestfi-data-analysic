@@ -12,7 +12,6 @@ import handleLiquidateLog from "./lib/logs/Liquidate.js";
 import handleSellLog from "./lib/logs/Sell.js";
 import handleNewBuyRequestWithUsdt from "./lib/tx/newBuyRequestWithUsdt.js";
 import dotenv from 'dotenv';
-import schedule from "node-schedule";
 import knexInstance from "./lib/db.js";
 
 dotenv.config();
@@ -242,22 +241,7 @@ class Main {
 
 const main = new Main();
 
-const scheduleCronstyle = () => {
-  try {
-    schedule.scheduleJob('*/5 * * * *', () => {
-      console.log('scheduleCronstyle:' + new Date())
-      main.run().finally(() => {
-        console.log('scheduleCronstyle executed finally:' + new Date())
-      })
-    })
-  } catch (e) {
-    console.log('scheduleCronstyle error:' + e)
-    process.exit(0)
-  }
-}
-
-// scheduleCronstyle();
-
 main.run().finally(() => {
   console.log('scheduleCronstyle executed finally:' + new Date())
+  process.exit(0)
 })

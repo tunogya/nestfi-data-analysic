@@ -2,7 +2,7 @@
 // Buy (uint256 orderIndex, uint256 amount, address owner)
 // address 0x02904e03937e6a36d475025212859f1956bec3f0
 import {BigNumber} from "@ethersproject/bignumber";
-import {saveFutureTrading, getExecutePrice, getPreviousOrderState} from "../db.js";
+import knexInstance, {getExecutePrice, getPreviousOrderState} from "../db.js";
 import getDataFromLog from "../getDataFromLog.js";
 
 // 需要判断是否是限价单，如果是限价单，则有执行费，如果是市价单，则没有执行费
@@ -25,74 +25,91 @@ const handleBuyLog = async (log, chainid) => {
   
   if (order.ordertype === 'LIMIT_REQUEST' || order.ordertype === 'LIMIT_EDIT') {
     // LIMIT_ORDER_EXECUTION
-    await saveFutureTrading({
-      blocknumber,
-      hash,
-      timestamp,
-      gasfee,
-      product,
-      currency,
-      chainid,
-      positionindex,
-      leverage,
-      orderprice,
-      ordertype: 'LIMIT_ORDER_EXECUTION',
-      direction,
-      margin,
-      volume,
-      stoplossprice,
-      takeprofitprice,
-      fees: 0,
-      executionfees: 15,
-      walletaddress,
-      status: true
-    })
-    await saveFutureTrading({
-      blocknumber,
-      hash,
-      timestamp,
-      gasfee,
-      product,
-      currency,
-      chainid,
-      positionindex,
-      leverage,
-      orderprice,
-      ordertype: 'LIMIT_ORDER_FEE',
-      direction,
-      margin,
-      volume,
-      stoplossprice,
-      takeprofitprice,
-      fees,
-      executionfees: 0,
-      walletaddress,
-      status: true
-    })
+    try {
+      await knexInstance('f_future_trading').insert({
+        blocknumber,
+        hash,
+        timestamp,
+        gasfee,
+        product,
+        currency,
+        chainid,
+        positionindex,
+        leverage,
+        orderprice,
+        ordertype: 'LIMIT_ORDER_EXECUTION',
+        direction,
+        margin,
+        volume,
+        stoplossprice,
+        takeprofitprice,
+        fees: 0,
+        executionfees: 15,
+        walletaddress,
+        status: true
+      }).onConflict(['hash', 'ordertype']).ignore()
+      // console.log('save FutureTrading success')
+    } catch (e) {
+      console.log('--save FutureTrading error')
+      console.log(e)
+    }
+    try {
+      await knexInstance('f_future_trading').insert({
+        blocknumber,
+        hash,
+        timestamp,
+        gasfee,
+        product,
+        currency,
+        chainid,
+        positionindex,
+        leverage,
+        orderprice,
+        ordertype: 'LIMIT_ORDER_FEE',
+        direction,
+        margin,
+        volume,
+        stoplossprice,
+        takeprofitprice,
+        fees,
+        executionfees: 0,
+        walletaddress,
+        status: true
+      }).onConflict(['hash', 'ordertype']).ignore()
+      // console.log('save FutureTrading success')
+    } catch (e) {
+      console.log('--save FutureTrading error')
+      console.log(e)
+    }
   } else {
-    // MARKET_ORDER_FEE
-    await saveFutureTrading({
-      blocknumber,
-      hash,
-      timestamp,
-      gasfee,
-      product,
-      currency,
-      chainid,
-      positionindex,
-      leverage,
-      orderprice,
-      ordertype: 'MARKET_ORDER_FEE',
-      direction,
-      margin,
-      volume,
-      stoplossprice,
-      takeprofitprice,
-      fees,
-      executionfees: 0,
-      walletaddress,
-      status: true
-    })
+    try {
+      await knexInstance('f_future_trading').insert({
+        blocknumber,
+        hash,
+        timestamp,
+        gasfee,
+        product,
+        currency,
+        chainid,
+        positionindex,
+        leverage,
+        orderprice,
+        ordertype: 'MARKET_ORDER_FEE',
+        direction,
+        margin,
+        volume,
+        stoplossprice,
+        takeprofitprice,
+        fees,
+        executionfees: 0,
+        walletaddress,
+        status: true
+      }).onConflict(['hash', 'ordertype']).ignore()
+      // console.log('save FutureTrading success')
+    } catch (e) {
+      console.log('--save FutureTrading error')
+      console.log(e)
+    }
   }
 }
 

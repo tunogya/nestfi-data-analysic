@@ -1,6 +1,6 @@
 import {BigNumber} from "@ethersproject/bignumber";
 import getDataFromTx from "../getDataFromTx.js";
-import {saveFutureTrading} from "../db.js";
+import knexInstance from "../db.js";
 
 const handleNewBuyRequestWithUsdt = async (tx, chainid) => {
   const {blocknumber, gasfee, hash, status, timestamp, walletaddress} = getDataFromTx(tx);
@@ -33,28 +33,34 @@ const handleNewBuyRequestWithUsdt = async (tx, chainid) => {
   const stoplossprice = BigNumber.from('0x' + tx.input.slice(458, 522)).div(BigNumber.from(10).pow(16)).toNumber() / 100;
   const takeprofitprice = BigNumber.from('0x' + tx.input.slice(522, 586)).div(BigNumber.from(10).pow(16)).toNumber() / 100;
   
-  await saveFutureTrading({
-    blocknumber,
-    hash,
-    timestamp,
-    gasfee,
-    product,
-    chainid,
-    positionindex,
-    leverage,
-    orderprice,
-    currency: 'USDT',
-    ordertype: limit ? "LIMIT_REQUEST" : "MARKET_REQUEST",
-    direction,
-    margin: null,
-    volume: null,
-    stoplossprice,
-    takeprofitprice,
-    fees: 0,
-    executionfees: 0,
-    walletaddress,
-    status
-  })
+  try {
+    await knexInstance('f_future_trading').insert({
+      blocknumber,
+      hash,
+      timestamp,
+      gasfee,
+      product,
+      chainid,
+      positionindex,
+      leverage,
+      orderprice,
+      currency: 'USDT',
+      ordertype: limit ? "LIMIT_REQUEST" : "MARKET_REQUEST",
+      direction,
+      margin: null,
+      volume: null,
+      stoplossprice,
+      takeprofitprice,
+      fees: 0,
+      executionfees: 0,
+      walletaddress,
+      status
+    }).onConflict(['hash', 'ordertype']).ignore()
+    // console.log('save FutureTrading success')
+  } catch (e) {
+    console.log('--save FutureTrading error')
+    console.log(e)
+  }
 }
 
 export default handleNewBuyRequestWithUsdt;

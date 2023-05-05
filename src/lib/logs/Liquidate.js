@@ -3,7 +3,7 @@
 // address 0x02904e03937e6a36d475025212859f1956bec3f0
 import {BigNumber} from "@ethersproject/bignumber";
 import getDataFromLog from "../getDataFromLog.js";
-import {saveFutureTrading, getExecutePrice, getPreviousOrderState} from "../db.js";
+import knexInstance, {getExecutePrice, getPreviousOrderState} from "../db.js";
 
 const handleLiquidateLog = async (log, chainid) => {
   const {blocknumber, timestamp, hash, gasfee} = getDataFromLog(log);
@@ -20,29 +20,35 @@ const handleLiquidateLog = async (log, chainid) => {
   const { product, leverage, margin, direction, stoplossprice, takeprofitprice, currency } = order;
   const orderprice = await getExecutePrice(hash, chainid, product);
   if (!orderprice) return;
-  
-  await saveFutureTrading({
-    blocknumber,
-    hash,
-    timestamp,
-    gasfee,
-    product,
-    currency,
-    chainid,
-    positionindex,
-    leverage,
-    orderprice,
-    ordertype,
-    direction,
-    margin,
-    volume: 0,
-    stoplossprice,
-    takeprofitprice,
-    fees: 0,
-    executionfees: 0,
-    walletaddress,
-    status: true
-  })
+
+  try {
+    await knexInstance('f_future_trading').insert({
+      blocknumber,
+      hash,
+      timestamp,
+      gasfee,
+      product,
+      currency,
+      chainid,
+      positionindex,
+      leverage,
+      orderprice,
+      ordertype,
+      direction,
+      margin,
+      volume: 0,
+      stoplossprice,
+      takeprofitprice,
+      fees: 0,
+      executionfees: 0,
+      walletaddress,
+      status: true
+    }).onConflict(['hash', 'ordertype']).ignore()
+    // console.log('save FutureTrading success')
+  } catch (e) {
+    console.log('--save FutureTrading error')
+    console.log(e)
+  }
 }
 
 export default handleLiquidateLog
