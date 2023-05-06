@@ -72,7 +72,7 @@ const handleSellLog = async (log, chainId) => {
             positionIndex,
             leverage,
             orderPrice,
-            orderType: 'MARKET_CLOSE',
+            orderType: 'MARKET_CLOSE_FEE',
             direction,
             margin,
             sellValue: value,
