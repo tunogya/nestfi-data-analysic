@@ -59,10 +59,10 @@ CREATE TABLE IF NOT EXISTS b_clearing_kol
     date                  date        NOT NULL,
     walletAddress         varchar(42) NOT NULL,
     relationshipLevel     integer     NOT NULL,
-    ratio                 float     NOT NULL,
     chainId               integer     NOT NULL,
     tradingVolume         float,
     fees                  float,
+    reward                float,
     dailyActiveUsers      integer,
     dailyUserTransactions integer,
     dailyDestruction      float
