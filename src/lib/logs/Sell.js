@@ -11,7 +11,7 @@ const handleSellLog = async (log, chainId) => {
   const positionIndex = BigNumber.from(log.data.slice(0, 66)).toNumber();
   const amount = BigNumber.from('0x' + log.data.slice(66, 130)).toNumber() / 10000;
   const value = BigNumber.from('0x' + log.data.slice(194, 258)).div(BigNumber.from(10).pow(14)).toNumber() / 10000;
-  const walletAddress = '0x' + log.data.slice(130, 194).slice(26);
+  const walletAddress = '0x' + log.data.slice(130, 194).slice(24);
   
   // 获取实际开仓时的价格，查询表中的 MARKET_ORDER_FEE or LIMIT_ORDER_FEE
   try {
