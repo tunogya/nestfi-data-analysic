@@ -3,88 +3,71 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-class Clearing {
+class Main {
   constructor() {
+  
   }
   
-  
-  async start(date) {
-    if (!this.dateIsValid(date)) {
+  async clearing(date) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
       console.log('date format error')
       return
     }
-    const orders = await this.getOrders(date)
-    console.log('Found orders:', orders.length)
-    if (orders.length === 0) {
-      console.log('No orders to be cleared')
-      return
-    }
-    const relationships = await this.getRelationships(orders)
-    console.log('Found relationships:', relationships.length)
-    const filteredAddresses = this.filterBlackList(orders)
-    console.log('Found filteredAddresses:', filteredAddresses.length)
-    const [l1clearingData, l2clearingData] = this.calculateClearingData(orders, relationships)
-    await knexInstance.transaction(async trx => {
-          try {
-            await this.updateClearing(trx, orders)
-            await this.saveClearingData(trx, date, l1clearingData, 1)
-            await this.saveClearingData(trx, date, l2clearingData, 2)
-            await trx.commit();
-            console.log('trx.commit')
-          } catch (e) {
-            await trx.rollback()
-            console.log('trx.rollback', e)
-          }
-        }
-    )
-  
-  }
-  
-  async getOrders(date) {
     const start = new Date(date + 'T00:00:00.000Z')
     const end = new Date(start.getTime() + 24 * 60 * 60 * 1000)
-    console.log('Clearing future for kol\n--start:', start, 'end:', end)
-    return knexInstance('f_future_trading')
+    console.log('clearing future for kol\n--start:', start, 'end:', end)
+    const orders = await knexInstance('f_future_trading')
         .where('timeStamp', '>=', start)
         .where('timeStamp', '<', end)
         .where('status', true)
         .whereIn('orderType', ['MARKET_CLOSE_FEE', 'TP_ORDER_FEE', 'SL_ORDER_FEE',
           'MARKET_LIQUIDATION', 'MARKET_ORDER_FEE', 'LIMIT_ORDER_FEE'])
-        .where('clearingStatus', false);
-  }
-  
-  
-  async getRelationships(orders) {
+        .where('clearingStatus', false)
+    console.log('--find orders:', orders.length)
+    if (orders.length === 0) {
+      console.log('no orders to be cleared')
+      return
+    }
+    // 根据单号持有人地址，查询他们所有对应，尚在有效期内的邀请关系
+    // status = invited
+    // 遍历所有订单，根据订单的持有人地址，查询他们所有对应，尚在有效期内的邀请关系
     const addresses = orders.map(order => order.walletAddress.toLowerCase())
-    return knexInstance('f_user_relationship')
-        .whereIn('inviteeWalletAddress', addresses)
-        .where('status', 'invited');
-  }
-  
-  
-  async filterBlackList(orders) {
-    const addresses = orders.map(order => order.walletAddress.toLowerCase())
+    console.log('--find user:', addresses.length)
+    // 查询用户是否在黑名单中，以及类型是不对 KOL 返佣，若是，则排除这部分用户
     let blackList = await knexInstance('f_user_blacklist')
-        .whereIn('walletAddress', addresses)
+        .whereRaw(`LOWER(walletAddress) in (${addresses.map(address => `'${address}'`).join(',')})`)
         .where('type', 1)
         .select('walletAddress')
     blackList = blackList.map(item => item.walletAddress.toLowerCase())
     console.log('--find blacklist:', blackList.length)
-    return addresses.filter(address => !blackList.includes(address))
-  }
-  
-  
-  calculateClearingData(orders, relationships) {
+    const filteredAddresses = addresses.filter(address => !blackList.includes(address))
+    console.log('--find filteredAddresses:', filteredAddresses.length)
+    // 查询所有层级的邀请关系
+    const relationships = await knexInstance('f_user_relationship')
+        .whereRaw(`LOWER(inviteeWalletAddress) in (${filteredAddresses.map(address => `'${address}'`).join(',')})`)
+        .where('status', 'invited')
+    console.log('--find relationship:', relationships.length)
+    // 遍历 orders，查询邀请关系，计算出 KOL 当天的聚合数据，得出清算表
+    // tradingVolume KOL该日该地址带来的交易量汇总(NEST) volume，
+    // fees KOL该日该地址带来的手续费汇总(NEST)
+    // dailyActiveUsers KOL该日该地址带来的活跃用户数
+    // dailyUserTransactions KOL该日该地址带来的交易人次
+    // dailyDestruction 只有平仓和爆仓才计算销毁 KOL该日该地址带来的销毁量（正数代表增发）(NEST） "实际到账金额/（1-0.05%）-初始保障金（没有手续费）- 追加保证金
+    //    加爆仓全部金额（初始保证金+追加保证金）"
     const l1clearingData = {}, l2clearingData = {}
     for (let i = 0; i < orders.length; i++) {
       const order = orders[i]
       const orderAddress = order.walletAddress.toLowerCase()
       const volume = order.volume
       const fee = order.fees
-      const [l1Relationship, l2Relationship] = this.getRelationship(relationships, orderAddress)
       
-      const addToClearingData = (data, address, rewardRatio) => {
-        data[address] = data[address] || {
+      // 查询订单持有人的一级邀请人和二级邀请人
+      // 清算 L1 关系的数据
+      const l1Relationship = relationships.find(item => item.inviteeWalletAddress.toLowerCase() === orderAddress && item.relationshipLevel === 1)
+      if (l1Relationship) {
+        const l1Address = l1Relationship.inviterWalletAddress.toLowerCase()
+        // l1clearingData 是一个字典，保存各个地址的聚合数据
+        l1clearingData[l1Address] = l1clearingData[l1Address] || {
           tradingVolume: 0,
           fees: 0,
           dailyActiveUsers: new Set(),
@@ -92,78 +75,111 @@ class Clearing {
           dailyDestruction: 0,
           reward: 0,
         }
-        data[address].tradingVolume += volume
-        data[address].fees += fee
-        data[address].dailyActiveUsers.add(orderAddress)
-        data[address].dailyUserTransactions += 1
-        if (rewardRatio) {
-          data[address].reward += Number((fee * rewardRatio).toFixed(2))
+        l1clearingData[l1Address].tradingVolume += volume
+        l1clearingData[l1Address].fees += fee
+        l1clearingData[l1Address].dailyActiveUsers.add(orderAddress)
+        l1clearingData[l1Address].dailyUserTransactions += 1
+        if (l1Relationship.rewardRatio) {
+          l1clearingData[l1Address].reward += Number((fee * l1Relationship.rewardRatio).toFixed(2))
         } else {
-          console.log('rewardRatio is null')
+          console.log('l1Relationship.rewardRatio is null', l1Relationship)
         }
         if (order.orderType === 'MARKET_CLOSE_FEE' || order.orderType === 'TP_ORDER_FEE' ||
             order.orderType === 'SL_ORDER_FEE' || order.orderType === 'MARKET_LIQUIDATION') {
-          data[address].dailyDestruction += (order.sellValue - order.margin)
+          l1clearingData[l1Address].dailyDestruction += (order.volume - order.margin)
         }
       }
-      
-      if (l1Relationship) {
-        addToClearingData(l1clearingData, l1Relationship.inviterWalletAddress, l1Relationship.rewardRatio)
-      }
-      
+      // 清算 L2 关系的数据
+      const l2Relationship = relationships.find(item => item.inviteeWalletAddress.toLowerCase() === orderAddress && item.relationshipLevel === 2)
       if (l2Relationship) {
-        addToClearingData(l2clearingData, l2Relationship.inviterWalletAddress, l2Relationship.rewardRatio)
+        const l2Address = l2Relationship.inviterWalletAddress.toLowerCase()
+        l2clearingData[l2Address] = l2clearingData[l2Address] || {
+          tradingVolume: 0,
+          fees: 0,
+          dailyActiveUsers: new Set(),
+          dailyUserTransactions: 0,
+          dailyDestruction: 0,
+          reward: 0,
+        }
+        l2clearingData[l2Address].tradingVolume += volume
+        l2clearingData[l2Address].fees += fee
+        l2clearingData[l2Address].dailyActiveUsers.add(orderAddress)
+        l2clearingData[l2Address].dailyUserTransactions += 1
+        if (l2Relationship.rewardRatio) {
+          l2clearingData[l1Address].reward += Number((fee * l2Relationship.rewardRatio).toFixed(2))
+        } else {
+          console.log('l2Relationship.rewardRatio is null', l2Relationship)
+        }
+        
+        if (order.orderType === 'MARKET_CLOSE_FEE' || order.orderType === 'TP_ORDER_FEE' ||
+            order.orderType === 'SL_ORDER_FEE' || order.orderType === 'MARKET_LIQUIDATION') {
+          l2clearingData[l2Address].dailyDestruction += (order.sellValue - order.margin)
+        }
       }
     }
-    return [l1clearingData, l2clearingData]
-    
+    // 5. 与上步操作原子性地，更新对应的单号所有记录，标记为已清算
+    // 插入清算表，同时更新订单表，设置为已清算
+    await knexInstance.transaction(async trx => {
+      try {
+        // 遍历字典l1Relationship和l2Relationship，插入清算表
+        for (const address in l1clearingData) {
+          const data = l1clearingData[address]
+          await trx('b_clearing_kol').insert({
+            date: date,
+            walletAddress: address,
+            relationshipLevel: 1,
+            chainId: 56,
+            tradingVolume: data.tradingVolume,
+            fees: data.fees,
+            reward: data.reward,
+            dailyActiveUsers: data.dailyActiveUsers.size,
+            dailyUserTransactions: data.dailyUserTransactions,
+            dailyDestruction: data.dailyDestruction,
+          })
+        }
+        for (const address in l2clearingData) {
+          const data = l2clearingData[address]
+          await trx('b_clearing_kol').insert({
+            date: date,
+            walletAddress: address,
+            relationshipLevel: 2,
+            chainId: 56,
+            tradingVolume: data.tradingVolume,
+            fees: data.fees,
+            reward: data.reward,
+            dailyActiveUsers: data.dailyActiveUsers.size,
+            dailyUserTransactions: data.dailyUserTransactions,
+            dailyDestruction: data.dailyDestruction,
+          })
+        }
+        
+        await trx('f_future_trading')
+            .whereIn('_id', orders.map(order => order._id))
+            .update({
+              clearingStatus: true,
+            })
+        await trx.commit();
+        console.log('trx.commit')
+      } catch (e) {
+        await trx.rollback()
+        console.log('trx.rollback', e)
+      }
+    })
   }
   
-  async updateClearing(trx, orders) {
-    await trx('f_future_trading')
-        .whereIn('_id', orders.map(order => order._id))
-        .update({
-          clearingStatus: true,
-        })
-  }
-  
-  async saveClearingData(trx, date, clearingData, level) {
-    const records = []
-    for (const address in clearingData) {
-      const data = clearingData[address]
-      records.push({
-        date: date,
-        walletAddress: address,
-        relationshipLevel: level,
-        chainId: 56,
-        tradingVolume: data.tradingVolume,
-        fees: data.fees,
-        reward: data.reward,
-        dailyActiveUsers: data.dailyActiveUsers.size,
-        dailyUserTransactions: data.dailyUserTransactions,
-        dailyDestruction: data.dailyDestruction,
-      })
-    }
-    if (records.length > 0) {
-      await trx('b_clearing_kol').insert(records)
-    }
-  }
-  
-  dateIsValid(date) {
-    return /^\d{4}-d2{2}$/.test(date)
-  }
-  
-  getRelationship(relationships, inviteeWalletAddress) {
-    const l1Relationship = relationships.find(item => item.inviteeWalletAddress.toLowerCase() === inviteeWalletAddress && item.relationshipLevel === 1)
-    const l2Relationship = relationships.find(item => item.inviteeWalletAddress.toLowerCase() === inviteeWalletAddress && item.relationshipLevel === 2)
-    return [l1Relationship, l2Relationship]
+  async start() {
+    let yesterday = new Date()
+    yesterday.setDate(yesterday.getDate() - 1)
+    yesterday = yesterday.toISOString().slice(0, 10)
+    await this.clearing(yesterday)
   }
 }
 
-const clearing = new Clearing()
-clearing.start('2023-11-30')
-    .catch((e) => {
-      console.log('Clearing start error', e)
+const main = new Main()
+
+main.start()
+    .catch(e => {
+      console.log('main.start error', e)
     })
     .finally(() => {
       process.exit(0)
