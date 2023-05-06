@@ -152,7 +152,7 @@ class Main {
             dailyDestruction: data.dailyDestruction,
           })
         }
-
+        
         await trx('f_future_trading')
             .whereIn('_id', orders.map(order => order._id))
             .update({
@@ -168,7 +168,10 @@ class Main {
   }
   
   async start() {
-    await this.clearing('2023-05-05')
+    let yesterday = new Date()
+    yesterday.setDate(yesterday.getDate() - 1)
+    yesterday = yesterday.toISOString().slice(0, 10)
+    await this.clearing(yesterday)
   }
 }
 
