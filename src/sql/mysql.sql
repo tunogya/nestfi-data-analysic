@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS b_clearing_kol
     dailyActiveUsers      integer,
     dailyUserTransactions integer,
     dailyDestruction      decimal(12, 2),
+    status                boolean     NOT NULL,
     settlementStatus      boolean   DEFAULT FALSE
 );
 
