@@ -135,6 +135,7 @@ class Main {
             dailyActiveUsers: data.dailyActiveUsers.size,
             dailyUserTransactions: data.dailyUserTransactions,
             dailyDestruction: data.dailyDestruction,
+            status: true,
           })
         }
         for (const address in l2clearingData) {
@@ -150,6 +151,7 @@ class Main {
             dailyActiveUsers: data.dailyActiveUsers.size,
             dailyUserTransactions: data.dailyUserTransactions,
             dailyDestruction: data.dailyDestruction,
+            status: true,
           })
         }
         
