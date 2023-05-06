@@ -113,7 +113,7 @@ class Main {
         
         if (order.orderType === 'MARKET_CLOSE_FEE' || order.orderType === 'TP_ORDER_FEE' ||
             order.orderType === 'SL_ORDER_FEE' || order.orderType === 'MARKET_LIQUIDATION') {
-          l2clearingData[l2Address].dailyDestruction += (order.volume - order.margin)
+          l2clearingData[l2Address].dailyDestruction += (order.sellValue - order.margin)
         }
       }
     }

@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS f_future_trading
     takeProfitPrice decimal(12, 2),
     fees            decimal(12, 2),
     executionFees   decimal(12, 2),
+    sellValue       decimal(12, 2),
     walletAddress   varchar(42)    NOT NULL,
     status          boolean        NOT NULL,
     clearingStatus  boolean                 DEFAULT FALSE,

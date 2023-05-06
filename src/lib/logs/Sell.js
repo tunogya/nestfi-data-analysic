@@ -9,7 +9,9 @@ const handleSellLog = async (log, chainId) => {
   const {blockNumber, timeStamp, hash, gasFee} = getDataFromLog(log);
   // Sell (uint256 orderIndex, uint256 amount, address owner, uint256 value)
   const positionIndex = BigNumber.from(log.data.slice(0, 66)).toNumber();
+  // amount 是初始保证金
   const amount = BigNumber.from('0x' + log.data.slice(66, 130)).toNumber() / 10000;
+  // value 是实际转账金额
   const value = BigNumber.from('0x' + log.data.slice(194, 258)).div(BigNumber.from(10).pow(14)).toNumber() / 10000;
   const walletAddress = '0x' + log.data.slice(130, 194).slice(24);
   
@@ -20,7 +22,7 @@ const handleSellLog = async (log, chainId) => {
       console.log('order is null')
       return
     }
-    const {product, leverage, direction, stopLossPrice, takeProfitPrice, currency} = order;
+    const {product, leverage, direction, stopLossPrice, takeProfitPrice, currency, margin} = order;
     
     // 获取实际开单时的价格
     const open_orders = await knexInstance('f_future_trading')
@@ -44,7 +46,6 @@ const handleSellLog = async (log, chainId) => {
     
     const volume = Number(((orderPrice / basePrice) * amount * leverage).toFixed(4));
     const fees = Number((volume * 0.0005).toFixed(4));
-    const margin = value;
     
     // 是是止盈还是止损
     // 如果看多，orderPrice >= basePrice 则是止盈，反之则是止损
@@ -74,6 +75,7 @@ const handleSellLog = async (log, chainId) => {
             orderType: 'MARKET_CLOSE',
             direction,
             margin,
+            sellValue: value,
             volume,
             stopLossPrice,
             takeProfitPrice,
@@ -104,6 +106,7 @@ const handleSellLog = async (log, chainId) => {
             orderType: isTakeProfit ? 'TP_ORDER_FEE' : 'SL_ORDER_FEE',
             direction,
             margin,
+            sellValue: value,
             volume,
             stopLossPrice,
             takeProfitPrice,
@@ -132,6 +135,7 @@ const handleSellLog = async (log, chainId) => {
             orderType: isTakeProfit ? 'TP_ORDER_EXECUTION' : 'SL_ORDER_EXECUTION',
             direction,
             margin,
+            sellValue: value,
             volume,
             stopLossPrice,
             takeProfitPrice,

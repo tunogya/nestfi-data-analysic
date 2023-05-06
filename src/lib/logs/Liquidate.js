@@ -10,7 +10,6 @@ const handleLiquidateLog = async (log, chainId) => {
   
   // Liquidate (uint256 orderIndex, address owner, uint256 reward)
   const positionIndex = BigNumber.from(log.data.slice(0, 66)).toNumber();
-  const orderType = 'MARKET_LIQUIDATION'
   // 从data中取出owner，且只保留40位
   const walletAddress = '0x' + log.data.slice(66, 130).slice(24);
   
@@ -33,10 +32,11 @@ const handleLiquidateLog = async (log, chainId) => {
       positionIndex,
       leverage,
       orderPrice,
-      orderType,
+      orderType: 'MARKET_LIQUIDATION',
       direction,
       margin,
       volume: 0,
+      sellValue: 0,
       stopLossPrice,
       takeProfitPrice,
       fees: 0,

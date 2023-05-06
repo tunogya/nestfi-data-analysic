@@ -4,7 +4,7 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
-    "asyncBlock": "node src/asyncBlock.js",
+    "asyncBlock": "pm2 start src/asyncBlock.js --name initAsyncBlock",
     "cronAsyncBlock": "pm2 start src/asyncBlock.js --name cronAsyncBlock --cron '*/10 * * * *'",
     "clearing": "node src/clearing.js"
   },

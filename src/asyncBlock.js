@@ -170,6 +170,7 @@ class Main {
       console.log('please set BSCSCAN_API_KEY')
       process.exit(0)
     }
+    console.log('start execute', new Date());
     const startBlockSucceed = await this.blockchainData.fetchStartBlock();
     if (!startBlockSucceed) {
       console.log('main function executed failed')
@@ -242,5 +243,6 @@ class Main {
 const main = new Main();
 
 main.run().finally(() => {
-  console.log('scheduleCronstyle executed finally:' + new Date())
+  console.log('executed finally:' + new Date())
+  process.exit(0)
 })
