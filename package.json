@@ -4,9 +4,9 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
-    "asyncBlock": "pm2 start src/asyncBlock.js --name initAsyncBlock --no-autorestart",
+    "asyncBlock": "pm2 start src/asyncBlock.js --name initAsyncBlock",
     "cronAsyncBlock": "pm2 start src/asyncBlock.js --name cronAsyncBlock --cron '*/10 * * * *'",
-    "clearing": "node src/clearing.js"
+    "clearingKol": "pm2 start src/clearingKol.js --name clearing"
   },
   "dependencies": {
     "@ethersproject/bignumber": "^5.7.0",
