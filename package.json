@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "asyncBlock": "pm2 start src/asyncBlock.js --name initAsyncBlock --no-autorestart",
-    "cronAsyncBlock": "pm2 start src/asyncBlock.js --name cronAsyncBlock --no-autorestart --cron '*/10 * * * *'",
+    "cronAsyncBlock": "pm2 start src/asyncBlock.js --name cronAsyncBlock --cron '*/10 * * * *'",
     "clearing": "node src/clearing.js"
   },
   "dependencies": {
