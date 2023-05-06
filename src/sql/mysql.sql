@@ -66,7 +66,8 @@ CREATE TABLE IF NOT EXISTS b_clearing_kol
     reward                decimal(12, 2),
     dailyActiveUsers      integer,
     dailyUserTransactions integer,
-    dailyDestruction      decimal(12, 2)
+    dailyDestruction      decimal(12, 2),
+    settlementStatus      boolean   DEFAULT FALSE
 );
 
 DROP TABLE IF EXISTS B_SETTLEMENT CASCADE;
