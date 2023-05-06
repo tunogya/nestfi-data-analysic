@@ -244,5 +244,4 @@ const main = new Main();
 
 main.run().finally(() => {
   console.log('executed finally:' + new Date())
-  process.exit(0)
 })
