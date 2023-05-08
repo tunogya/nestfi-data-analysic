@@ -27,7 +27,13 @@ class ClearingFuture {
       // 查询订单持有人的一级邀请人和二级邀请人
       // 清算 level 关系的数据
       const relationship = relationships.find(item => item.inviteeWalletAddress.toLowerCase() === orderAddress && item.relationshipLevel === level)
-      if (relationship?.inviterWalletAddress) {
+      // 需要确保 relationship 的创建时间在订单的创建时间之前
+      // 注意：在生成二级关系的时候，_createTime需要设置为同一级关系一样的时间
+      if (relationship && relationship._createTime > order.timeStamp) {
+        console.log('relationship._createTime > order.timeStamp', relationship._createTime, order.timeStamp)
+        continue
+      }
+      if (relationship && relationship?.inviterWalletAddress) {
         const inviterAddress = relationship.inviterWalletAddress.toLowerCase()
         // clearingData 是一个字典，保存各个地址的聚合数据
         clearingData[inviterAddress] = clearingData[inviterAddress] || {
@@ -117,9 +123,13 @@ class ClearingFuture {
     // 查询所有层级的邀请关系
     const relationshipsWithoutBlacklist = await knexInstance('f_user_relationship')
         .whereRaw(`LOWER(inviteeWalletAddress) in (${filteredAddresses.map(address => `'${address}'`).join(',')})`)
+        // 初步筛选出有效期内的邀请关系
+        .where('_createTime', '<=', end)
         .where('status', 'invited')
     const relationshipsOfBlacklist = await knexInstance('f_user_relationship')
         .whereRaw(`LOWER(inviteeWalletAddress) in (${blackList.map(address => `'${address}'`).join(',')})`)
+        // 初步筛选出有效期内的邀请关系
+        .where('_createTime', '<=', end)
         .where('status', 'invited')
     console.log('--find relationship:', relationshipsWithoutBlacklist.length)
     const l1clearingDataWithoutBlacklist = this.getClearingData(orders, relationshipsWithoutBlacklist, 1, true)
