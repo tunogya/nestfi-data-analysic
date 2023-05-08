@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-class ClearingKol {
+class ClearingFuture {
   constructor() {
   
   }
@@ -167,7 +167,7 @@ class ClearingKol {
   }
 }
 
-const clearing = new ClearingKol();
+const clearing = new ClearingFuture();
 clearing.handleYesterday().catch(e => {
   console.log('clearing yesterday error', e)
 }).finally(() => {
