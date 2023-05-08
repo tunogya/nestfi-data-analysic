@@ -21,16 +21,43 @@ class Main {
     console.log('--find clearingOrders:', clearingOrders.length)
     const settlementMap = {}
     for (let i = 0; i < clearingOrders.length; i++) {
-      const { walletAddress, reward } = clearingOrders[i]
+      const {walletAddress, reward, chainId} = clearingOrders[i]
       if (!settlementMap[walletAddress]) {
-        settlementMap[walletAddress] = 0
+        settlementMap[walletAddress] = {
+          settlementAmount: 0,
+          settlementCurrency: 'NEST',
+          chainId,
+        }
       }
-      settlementMap[walletAddress] += reward
+      settlementMap[walletAddress].settlementAmount += reward
     }
     console.log(settlementMap)
+    
+    // 插入结算表，更新清算表，使用事务
+    const trx = await knexInstance.transaction()
+    try {
+      const settlementOrders = Object.keys(settlementMap).map(walletAddress => {
+        const {settlementAmount, settlementCurrency, chainId} = settlementMap[walletAddress]
+        return {
+          walletAddress,
+          settlementAmount,
+          settlementCurrency,
+          chainId,
+          date,
+        }
+      })
+      await trx('b_settlement_kol').insert(settlementOrders)
+      await trx('b_clearing_kol')
+          .where('date', date)
+          .where('status', true)
+          .where('settlementStatus', false)
+          .update({settlementStatus: true})
+      await trx.commit()
+    } catch (e) {
+      console.log('settle error', e)
+      await trx.rollback()
+    }
   }
-  
-  
   async start() {
     await this.settle('2023-05-01')
   }

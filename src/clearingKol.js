@@ -119,54 +119,53 @@ class Main {
     }
     // 5. 与上步操作原子性地，更新对应的单号所有记录，标记为已清算
     // 插入清算表，同时更新订单表，设置为已清算
-    await knexInstance.transaction(async trx => {
-      try {
-        // 遍历字典l1Relationship和l2Relationship，插入清算表
-        for (const address in l1clearingData) {
-          const data = l1clearingData[address]
-          await trx('b_clearing_kol').insert({
-            date: date,
-            walletAddress: address,
-            relationshipLevel: 1,
-            chainId: 56,
-            tradingVolume: data.tradingVolume,
-            fees: data.fees,
-            reward: data.reward,
-            dailyActiveUsers: data.dailyActiveUsers.size,
-            dailyUserTransactions: data.dailyUserTransactions,
-            dailyDestruction: data.dailyDestruction,
-            status: true,
-          })
-        }
-        for (const address in l2clearingData) {
-          const data = l2clearingData[address]
-          await trx('b_clearing_kol').insert({
-            date: date,
-            walletAddress: address,
-            relationshipLevel: 2,
-            chainId: 56,
-            tradingVolume: data.tradingVolume,
-            fees: data.fees,
-            reward: data.reward,
-            dailyActiveUsers: data.dailyActiveUsers.size,
-            dailyUserTransactions: data.dailyUserTransactions,
-            dailyDestruction: data.dailyDestruction,
-            status: true,
-          })
-        }
-
-        await trx('f_future_trading')
-            .whereIn('_id', orders.map(order => order._id))
-            .update({
-              clearingStatus: true,
-            })
-        await trx.commit();
-        console.log('trx.commit')
-      } catch (e) {
-        await trx.rollback()
-        console.log('trx.rollback', e)
+    const trx = await knexInstance.transaction()
+    try {
+      // 遍历字典l1Relationship和l2Relationship，插入清算表
+      for (const address in l1clearingData) {
+        const data = l1clearingData[address]
+        await trx('b_clearing_kol').insert({
+          date: date,
+          walletAddress: address,
+          relationshipLevel: 1,
+          chainId: 56,
+          tradingVolume: data.tradingVolume,
+          fees: data.fees,
+          reward: data.reward,
+          dailyActiveUsers: data.dailyActiveUsers.size,
+          dailyUserTransactions: data.dailyUserTransactions,
+          dailyDestruction: data.dailyDestruction,
+          status: true,
+        })
       }
-    })
+      for (const address in l2clearingData) {
+        const data = l2clearingData[address]
+        await trx('b_clearing_kol').insert({
+          date: date,
+          walletAddress: address,
+          relationshipLevel: 2,
+          chainId: 56,
+          tradingVolume: data.tradingVolume,
+          fees: data.fees,
+          reward: data.reward,
+          dailyActiveUsers: data.dailyActiveUsers.size,
+          dailyUserTransactions: data.dailyUserTransactions,
+          dailyDestruction: data.dailyDestruction,
+          status: true,
+        })
+      }
+      
+      await trx('f_future_trading')
+          .whereIn('_id', orders.map(order => order._id))
+          .update({
+            clearingStatus: true,
+          })
+      await trx.commit();
+      console.log('trx.commit')
+    } catch (e) {
+      await trx.rollback()
+      console.log('trx.rollback', e)
+    }
   }
   
   async start() {
