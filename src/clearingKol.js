@@ -154,6 +154,17 @@ class Main {
     yesterday = yesterday.toISOString().slice(0, 10)
     await this.clearing(yesterday)
   }
+  
+  async clearingHistory() {
+    const start = new Date('2023-04-06T00:00:00.000Z')
+    const end = new Date('2023-05-08T00:00:00.000Z')
+    let date = start
+    while (date < end) {
+      const dateString = date.toISOString().slice(0, 10)
+      await this.clearing(dateString)
+      date.setDate(date.getDate() + 1)
+    }
+  }
 }
 
 const main = new Main();
@@ -162,3 +173,10 @@ main.clearingYesterday().catch(e => {
 }).finally(() => {
   console.log('executed finally:' + new Date())
 })
+
+// main.clearingHistory().catch(e => {
+//   console.log('clearing history error', e)
+// }).finally(() => {
+//   console.log('executed finally:' + new Date())
+//   process.exit(0)
+// })
