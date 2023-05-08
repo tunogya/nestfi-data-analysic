@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-class Main {
+class Settlement {
   constructor() {
   
   }
@@ -48,6 +48,8 @@ class Main {
       return
     }
     
+    console.log('settle:', date)
+    
     const settlementFutureKOLMap = await this.settlementFutureKOL(date, 56)
     
     if (Object.keys(settlementFutureKOLMap).length === 0) {
@@ -82,18 +84,36 @@ class Main {
     }
   }
   
-  async start() {
+  async handleYesterday() {
     let yesterday = new Date()
     yesterday.setDate(yesterday.getDate() - 1)
     yesterday = yesterday.toISOString().slice(0, 10)
     await this.settle(yesterday)
   }
+  
+  async handleHistory() {
+    let yesterday = new Date()
+    yesterday.setDate(yesterday.getDate() - 1)
+    let date = new Date('2023-04-06T00:00:00.000Z')
+    while (date < yesterday) {
+      const dateString = date.toISOString().slice(0, 10)
+      await this.settle(dateString)
+      date.setDate(date.getDate() + 1)
+    }
+  }
 }
 
-const main = new Main()
+const settlement = new Settlement()
 
-main.start().catch(e => {
+settlement.handleYesterday().catch(e => {
   console.log('main.start error', e)
 }).finally(() => {
   console.log('executed finally:' + new Date())
 })
+
+// settlement.handleHistory().catch(e => {
+//   console.log('clearing history error', e)
+// }).finally(() => {
+//   console.log('executed finally:' + new Date())
+//   process.exit(0)
+// })

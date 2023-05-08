@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-class Main {
+class ClearingKol {
   constructor() {
   
   }
@@ -148,14 +148,14 @@ class Main {
     }
   }
   
-  async clearingYesterday() {
+  async handleYesterday() {
     let yesterday = new Date()
     yesterday.setDate(yesterday.getDate() - 1)
     yesterday = yesterday.toISOString().slice(0, 10)
     await this.clearing(yesterday)
   }
   
-  async clearingHistory() {
+  async handleHistory() {
     let yesterday = new Date()
     yesterday.setDate(yesterday.getDate() - 1)
     let date = new Date('2023-04-06T00:00:00.000Z')
@@ -167,14 +167,14 @@ class Main {
   }
 }
 
-const main = new Main();
-main.clearingYesterday().catch(e => {
+const clearing = new ClearingKol();
+clearing.handleYesterday().catch(e => {
   console.log('clearing yesterday error', e)
 }).finally(() => {
   console.log('executed finally:' + new Date())
 })
 
-// main.clearingHistory().catch(e => {
+// clearing.clearingHistory().catch(e => {
 //   console.log('clearing history error', e)
 // }).finally(() => {
 //   console.log('executed finally:' + new Date())
