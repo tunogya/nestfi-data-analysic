@@ -156,10 +156,10 @@ class Main {
   }
   
   async clearingHistory() {
-    const start = new Date('2023-04-06T00:00:00.000Z')
-    const end = new Date('2023-05-08T00:00:00.000Z')
-    let date = start
-    while (date < end) {
+    let yesterday = new Date()
+    yesterday.setDate(yesterday.getDate() - 1)
+    let date = new Date('2023-04-06T00:00:00.000Z')
+    while (date < yesterday) {
       const dateString = date.toISOString().slice(0, 10)
       await this.clearing(dateString)
       date.setDate(date.getDate() + 1)
