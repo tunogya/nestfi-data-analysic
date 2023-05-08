@@ -62,7 +62,10 @@ class Main {
     }
   }
   async start() {
-    await this.settle('2023-04-30')
+    let yesterday = new Date()
+    yesterday.setDate(yesterday.getDate() - 1)
+    yesterday = yesterday.toISOString().slice(0, 10)
+    await this.settle(yesterday)
   }
 }
 
@@ -71,5 +74,5 @@ const main = new Main()
 main.start().catch(e => {
   console.log('main.start error', e)
 }).finally(() => {
-  process.exit(0)
+  console.log('executed finally:' + new Date())
 })

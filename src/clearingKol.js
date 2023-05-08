@@ -148,17 +148,17 @@ class Main {
     }
   }
   
-  async start() {
-    await this.clearing('2023-04-30')
+  async clearingYesterday() {
+    let yesterday = new Date()
+    yesterday.setDate(yesterday.getDate() - 1)
+    yesterday = yesterday.toISOString().slice(0, 10)
+    await this.clearing(yesterday)
   }
 }
 
-const main = new Main()
-
-main.start()
-    .catch(e => {
-      console.log('main.start error', e)
-    })
-    .finally(() => {
-      process.exit(0)
-    })
+const main = new Main();
+main.clearingYesterday().catch(e => {
+  console.log('clearing yesterday error', e)
+}).finally(() => {
+  console.log('executed finally:' + new Date())
+})
