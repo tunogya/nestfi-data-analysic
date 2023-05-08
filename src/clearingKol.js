@@ -64,7 +64,7 @@ class Main {
       // 查询订单持有人的一级邀请人和二级邀请人
       // 清算 L1 关系的数据
       const l1Relationship = relationships.find(item => item.inviteeWalletAddress.toLowerCase() === orderAddress && item.relationshipLevel === 1)
-      if (l1Relationship) {
+      if (l1Relationship?.inviterWalletAddress) {
         const l1Address = l1Relationship.inviterWalletAddress.toLowerCase()
         // l1clearingData 是一个字典，保存各个地址的聚合数据
         l1clearingData[l1Address] = l1clearingData[l1Address] || {
@@ -86,15 +86,12 @@ class Main {
         }
         if (order.orderType === 'MARKET_CLOSE_FEE' || order.orderType === 'TP_ORDER_FEE' ||
             order.orderType === 'SL_ORDER_FEE' || order.orderType === 'MARKET_LIQUIDATION') {
-          console.log('order.sellValue', order.sellValue)
-          console.log('order.margin', order.margin)
-          console.log('order.sellValue - order.margin', order.sellValue - order.margin)
           l1clearingData[l1Address].dailyDestruction += (order.sellValue - order.margin)
         }
       }
       // 清算 L2 关系的数据
       const l2Relationship = relationships.find(item => item.inviteeWalletAddress.toLowerCase() === orderAddress && item.relationshipLevel === 2)
-      if (l2Relationship) {
+      if (l2Relationship?.inviterWalletAddress) {
         const l2Address = l2Relationship.inviterWalletAddress.toLowerCase()
         l2clearingData[l2Address] = l2clearingData[l2Address] || {
           tradingVolume: 0,
@@ -116,9 +113,6 @@ class Main {
         
         if (order.orderType === 'MARKET_CLOSE_FEE' || order.orderType === 'TP_ORDER_FEE' ||
             order.orderType === 'SL_ORDER_FEE' || order.orderType === 'MARKET_LIQUIDATION') {
-          console.log('order.sellValue', order.sellValue)
-          console.log('order.margin', order.margin)
-          console.log('order.sellValue - order.margin', order.sellValue - order.margin)
           l2clearingData[l2Address].dailyDestruction += (order.sellValue - order.margin)
         }
       }
@@ -176,10 +170,16 @@ class Main {
   }
   
   async start() {
-    let yesterday = new Date()
-    yesterday.setDate(yesterday.getDate() - 1)
-    yesterday = yesterday.toISOString().slice(0, 10)
-    await this.clearing(yesterday)
+    // let yesterday = new Date()
+    // yesterday.setDate(yesterday.getDate() - 1)
+    // yesterday = yesterday.toISOString().slice(0, 10)
+    // await this.clearing(yesterday)
+    await this.clearing('2023-05-01')
+    await this.clearing('2023-05-02')
+    await this.clearing('2023-05-03')
+    await this.clearing('2023-05-04')
+    await this.clearing('2023-05-05')
+    await this.clearing('2023-05-06')
   }
 }
 
