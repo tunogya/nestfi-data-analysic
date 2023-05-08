@@ -86,7 +86,10 @@ class Main {
         }
         if (order.orderType === 'MARKET_CLOSE_FEE' || order.orderType === 'TP_ORDER_FEE' ||
             order.orderType === 'SL_ORDER_FEE' || order.orderType === 'MARKET_LIQUIDATION') {
-          l1clearingData[l1Address].dailyDestruction += (order.volume - order.margin)
+          console.log('order.sellValue', order.sellValue)
+          console.log('order.margin', order.margin)
+          console.log('order.sellValue - order.margin', order.sellValue - order.margin)
+          l1clearingData[l1Address].dailyDestruction += (order.sellValue - order.margin)
         }
       }
       // 清算 L2 关系的数据
@@ -106,13 +109,16 @@ class Main {
         l2clearingData[l2Address].dailyActiveUsers.add(orderAddress)
         l2clearingData[l2Address].dailyUserTransactions += 1
         if (l2Relationship.rewardRatio) {
-          l2clearingData[l1Address].reward += Number((fee * l2Relationship.rewardRatio).toFixed(2))
+          l2clearingData[l2Address].reward += Number((fee * l2Relationship.rewardRatio).toFixed(2))
         } else {
           console.log('l2Relationship.rewardRatio is null', l2Relationship)
         }
         
         if (order.orderType === 'MARKET_CLOSE_FEE' || order.orderType === 'TP_ORDER_FEE' ||
             order.orderType === 'SL_ORDER_FEE' || order.orderType === 'MARKET_LIQUIDATION') {
+          console.log('order.sellValue', order.sellValue)
+          console.log('order.margin', order.margin)
+          console.log('order.sellValue - order.margin', order.sellValue - order.margin)
           l2clearingData[l2Address].dailyDestruction += (order.sellValue - order.margin)
         }
       }
@@ -154,7 +160,7 @@ class Main {
             status: true,
           })
         }
-        
+
         await trx('f_future_trading')
             .whereIn('_id', orders.map(order => order._id))
             .update({
