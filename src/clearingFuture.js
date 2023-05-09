@@ -97,7 +97,7 @@ class ClearingFuture {
         .where('status', true)
         .whereIn('orderType', ['MARKET_CLOSE_FEE', 'TP_ORDER_FEE', 'SL_ORDER_FEE',
           'MARKET_LIQUIDATION', 'MARKET_ORDER_FEE', 'LIMIT_ORDER_FEE'])
-        // .where('clearingStatus', false)
+        .where('clearingStatus', false)
     console.log(orders[0], orders[orders.length - 1])
     console.log('--find orders:', orders.length)
     if (orders.length === 0) {
