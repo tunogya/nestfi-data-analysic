@@ -78,10 +78,12 @@ class Settlement {
           type
         }
       })
+      const walletAddresses = Object.keys(settlementFutureKOLMap)
       await trx('b_settlement').insert(settlementOrders)
       await trx('b_clearing_kol')
           .where('date', date)
           .where('status', true)
+          .whereRaw(`LOWER(walletAddress) in (${walletAddresses.map(address => `'${address}'`).join(',')})`)
           .where('settlementStatus', false)
           .update({settlementStatus: true})
       await trx.commit()
