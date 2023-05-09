@@ -30,7 +30,6 @@ class ClearingFuture {
       // 需要确保 relationship 的创建时间在订单的创建时间之前
       // 注意：在生成二级关系的时候，_createTime需要设置为同一级关系一样的时间
       if (relationship && relationship._createTime > order.timeStamp) {
-        console.log('relationship._createTime > order.timeStamp', relationship._createTime, order.timeStamp)
         continue
       }
       if (relationship && relationship?.inviterWalletAddress) {
@@ -98,7 +97,6 @@ class ClearingFuture {
         .whereIn('orderType', ['MARKET_CLOSE_FEE', 'TP_ORDER_FEE', 'SL_ORDER_FEE',
           'MARKET_LIQUIDATION', 'MARKET_ORDER_FEE', 'LIMIT_ORDER_FEE'])
         .where('clearingStatus', false)
-    console.log(orders[0], orders[orders.length - 1])
     console.log('--find orders:', orders.length)
     if (orders.length === 0) {
       console.log('no orders to be cleared')
