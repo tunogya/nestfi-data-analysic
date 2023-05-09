@@ -97,8 +97,8 @@ class ClearingFuture {
         .where('status', true)
         .whereIn('orderType', ['MARKET_CLOSE_FEE', 'TP_ORDER_FEE', 'SL_ORDER_FEE',
           'MARKET_LIQUIDATION', 'MARKET_ORDER_FEE', 'LIMIT_ORDER_FEE'])
-        .where('clearingStatus', false)
-    
+        // .where('clearingStatus', false)
+    console.log(orders[0], orders[orders.length - 1])
     console.log('--find orders:', orders.length)
     if (orders.length === 0) {
       console.log('no orders to be cleared')
@@ -107,8 +107,9 @@ class ClearingFuture {
     // 根据单号持有人地址，查询他们所有对应，尚在有效期内的邀请关系
     // status = invited
     // 遍历所有订单，根据订单的持有人地址，查询他们所有对应，尚在有效期内的邀请关系
-    const addresses = orders.map(order => order.walletAddress.toLowerCase())
-    console.log('--find user:', addresses.length)
+    let addresses = orders.map(order => order.walletAddress.toLowerCase())
+    addresses = [...new Set(addresses)]
+    console.log('--find addresses:', addresses.length)
     // 查询用户是否在黑名单中，以及类型是不对 KOL 返佣，若是，则排除这部分用户
     let blackList = await knexInstance('f_user_blacklist')
         .whereRaw(`LOWER(walletAddress) in (${addresses.map(address => `'${address}'`).join(',')})`)
