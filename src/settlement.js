@@ -27,10 +27,11 @@ class Settlement {
       console.log('no clearingOrders to be settled')
       return {}
     }
-    // 获取当天前的 KOL 黑名单数据
+    const endCheckDate = new Date(date)
+    endCheckDate.setDate(endCheckDate.getDate() + 1)
     const kolBlacklist = await knexInstance('f_kol_blacklist')
         .where('type', 1)
-        .where('_createTime', '<=', new Date(date).getTime() + 24 * 60 * 60 * 1000)
+        .where('_createTime', '<=', endCheckDate)
     const clearingOrdersWithoutBlacklist = clearingOrders.filter(order => {
       return !kolBlacklist.find(item => item.walletAddress.toLowerCase() === order.walletAddress.toLowerCase())
     })
