@@ -27,8 +27,15 @@ class Settlement {
       console.log('no clearingOrders to be settled')
       return {}
     }
-    for (let i = 0; i < clearingOrders.length; i++) {
-      const {walletAddress, reward} = clearingOrders[i]
+    // 获取当天前的 KOL 黑名单数据
+    const kolBlacklist = await knexInstance('f_kol_blacklist')
+        .where('type', 1)
+        .where('_createTime', '<=', new Date(date).getTime() + 24 * 60 * 60 * 1000)
+    const clearingOrdersWithoutBlacklist = clearingOrders.filter(order => {
+      return !kolBlacklist.find(item => item.walletAddress.toLowerCase() === order.walletAddress.toLowerCase())
+    })
+    for (let i = 0; i < clearingOrdersWithoutBlacklist.length; i++) {
+      const {walletAddress, reward} = clearingOrdersWithoutBlacklist[i]
       if (!settlementMap[walletAddress]) {
         settlementMap[walletAddress] = {
           settlementAmount: 0,
