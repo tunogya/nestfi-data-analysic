@@ -52,8 +52,6 @@ class ClearingFuture {
         clearingData[inviterAddress].dailyUserTransactions += 1
         if (relationship.rewardRatio) {
           clearingData[inviterAddress].reward += Number((fee * relationship.rewardRatio).toFixed(2))
-        } else {
-          console.log('inviter reward ratio is null', relationship)
         }
         if (order.orderType === 'MARKET_CLOSE_FEE' || order.orderType === 'TP_ORDER_FEE' ||
             order.orderType === 'SL_ORDER_FEE' || order.orderType === 'MARKET_LIQUIDATION') {
