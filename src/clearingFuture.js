@@ -183,7 +183,7 @@ clearing.handleYesterday().catch(e => {
   console.log('executed finally:' + new Date())
 })
 
-// clearing.clearingHistory().catch(e => {
+// clearing.handleHistory().catch(e => {
 //   console.log('clearing history error', e)
 // }).finally(() => {
 //   console.log('executed finally:' + new Date())
