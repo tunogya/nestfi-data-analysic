@@ -19,7 +19,10 @@ export const getExecutePrice = async (hash, chainId, product) => {
       .select('ethprice', 'btcprice', 'bnbprice')
       .where({hash, chainId})
   
-  if (prices.length === 0) return;
+  if (prices.length === 0) {
+    console.log(`db error: hash: ${hash}, chainId: ${chainId}`)
+    return
+  }
   let orderPrice = null
   const price = prices[0];
   if (product === 'ETH/USDT') {

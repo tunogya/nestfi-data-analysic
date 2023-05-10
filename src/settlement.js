@@ -53,6 +53,7 @@ class Settlement {
   async settle(date) {
     // 1. 找到 date 当天所有的未被结算的清算表记录
     if (!this.checkDate(date)) {
+      console.log('date is error')
       return
     }
     
@@ -61,6 +62,7 @@ class Settlement {
     const settlementFutureKOLMap = await this.settlementFutureKOL(date, 56)
     
     if (Object.keys(settlementFutureKOLMap).length === 0) {
+      console.log('no settlementFutureKOLMap')
       return
     }
     

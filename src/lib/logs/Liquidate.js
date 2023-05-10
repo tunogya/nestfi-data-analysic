@@ -14,11 +14,17 @@ const handleLiquidateLog = async (log, chainId) => {
   const walletAddress = '0x' + log.data.slice(66, 130).slice(24);
   
   const order = await getPreviousOrderState(positionIndex, chainId, timeStamp);
-  if (!order) return;
+  if (!order) {
+    console.log('order is null', positionIndex, chainId, timeStamp)
+    return
+  }
   
   const { product, leverage, margin, direction, stopLossPrice, takeProfitPrice, currency } = order;
   const orderPrice = await getExecutePrice(hash, chainId, product);
-  if (!orderPrice) return;
+  if (!orderPrice) {
+    console.log('orderPrice is null', hash, chainId, product)
+    return
+  }
 
   try {
     await knexInstance('f_future_trading').insert({

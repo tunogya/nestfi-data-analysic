@@ -82,6 +82,7 @@ class ClearingFuture {
   
   async clearing(date) {
     if (!this.checkDate(date)) {
+      console.log('date is error')
       return
     }
     
