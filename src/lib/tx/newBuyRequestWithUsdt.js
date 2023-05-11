@@ -33,6 +33,20 @@ const handleNewBuyRequestWithUsdt = async (tx, chainId) => {
   const stopLossPrice = BigNumber.from('0x' + tx.input.slice(458, 522)).div(BigNumber.from(10).pow(16)).toNumber() / 100;
   const takeProfitPrice = BigNumber.from('0x' + tx.input.slice(522, 586)).div(BigNumber.from(10).pow(16)).toNumber() / 100;
   
+  // 判断该记录是否已经存在
+  const exist = await knexInstance('f_future_trading')
+      .where({
+        hash,
+        chainId,
+        walletAddress,
+      })
+      .first();
+  
+  if (exist) {
+    console.log('exist request order', hash)
+    return;
+  }
+  
   try {
     await knexInstance('f_future_trading').insert({
       blockNumber,
