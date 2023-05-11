@@ -65,7 +65,7 @@ class BlockchainData {
         const url = `https://api.bscscan.com/api?module=account&action=txlist&address=${this.contractAddress}&startblock=${startblock}&end=${this.endBlock}&sort=asc&apikey=${this.apiKey}`;
         const res = await fetch(url);
         const data = await res.json();
-        if (data.result.length === 0) {
+        if (data.result.length === 0 || startblock === this.endBlock) {
           break
         }
         // allTx.push(...data.result)
@@ -95,7 +95,7 @@ class BlockchainData {
         const url = `https://api.bscscan.com/api?module=logs&action=getLogs&fromBlock=${startblock}&toBlock=${this.endBlock}&address=${this.contractAddress}&topic0=${topic0}&apikey=${this.apiKey}`;
         const res = await fetch(url);
         const data = await res.json();
-        if (data.result.length === 0) {
+        if (data.result.length === 0 || startblock === this.endBlock) {
           break
         }
         data.result.forEach((log) => {
