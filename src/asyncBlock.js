@@ -105,7 +105,7 @@ class BlockchainData {
         data.result.forEach((log) => {
           allLogSet.add(log)
         })
-        console.log('--fetched log from', startblock, 'to', BigNumber.from(data.result[data.result.length - 1].blockNumber).toNumber())
+        console.log('--fetched log from', startblock, 'to', BigNumber.from(data.result[data.result.length - 1].blockNumber).toNumber(), 'done', data.result.length, 'log')
         if (data.result.length < 1000) {
           startblock = BigNumber.from(data.result[data.result.length - 1].blockNumber).toNumber() + 1
         } else {
