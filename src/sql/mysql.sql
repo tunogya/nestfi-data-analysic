@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS f_future_trading
     walletAddress   varchar(42)    NOT NULL,
     status          boolean        NOT NULL,
     clearingStatus  boolean                 DEFAULT FALSE,
-    UNIQUE (hash, orderType)
+    UNIQUE (hash, orderType, positionIndex)
 );
 
 DROP TABLE IF EXISTS f_future_price CASCADE;
