@@ -33,7 +33,7 @@ const handleAdd = async (tx, chainId) => {
       executionFees: 0,
       walletAddress,
       status
-    }).onConflict(['hash', 'orderType']).ignore()
+    }).onConflict(['hash', 'orderType', 'positionIndex']).ignore()
     // console.log('save FutureTrading success')
   } catch (e) {
     console.log('--save FutureTrading error')

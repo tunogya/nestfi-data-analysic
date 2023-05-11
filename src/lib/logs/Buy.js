@@ -53,7 +53,7 @@ const handleBuyLog = async (log, chainId) => {
         executionFees: 15,
         walletAddress,
         status: true
-      }).onConflict(['hash', 'orderType']).ignore()
+      }).onConflict(['hash', 'orderType', 'positionIndex']).ignore()
       // console.log('save FutureTrading success')
     } catch (e) {
       console.log('--save FutureTrading error')
@@ -81,7 +81,7 @@ const handleBuyLog = async (log, chainId) => {
         executionFees: 0,
         walletAddress,
         status: true
-      }).onConflict(['hash', 'orderType']).ignore()
+      }).onConflict(['hash', 'orderType', 'positionIndex']).ignore()
       // console.log('save FutureTrading success')
     } catch (e) {
       console.log('--save FutureTrading error')
@@ -110,7 +110,7 @@ const handleBuyLog = async (log, chainId) => {
         executionFees: 0,
         walletAddress,
         status: true
-      }).onConflict(['hash', 'orderType']).ignore()
+      }).onConflict(['hash', 'orderType', 'positionIndex']).ignore()
       // console.log('save FutureTrading success')
     } catch (e) {
       console.log('--save FutureTrading error')

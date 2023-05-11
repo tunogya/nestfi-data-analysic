@@ -22,6 +22,20 @@ const handleNewBuyRequest = async (tx, chainId) => {
   const stopLossPrice = BigNumber.from('0x' + tx.input.slice(458, 522)).div(BigNumber.from(10).pow(16)).toNumber() / 100;
   const takeProfitPrice = BigNumber.from('0x' + tx.input.slice(394, 458)).div(BigNumber.from(10).pow(16)).toNumber() / 100;
   
+  // 判断该记录是否已经存在
+  const exist = await knexInstance('f_future_trading')
+      .where({
+        hash,
+        chainId,
+        walletAddress,
+      })
+      .first();
+  
+  if (exist) {
+    console.log('exist request order', hash)
+    return;
+  }
+  
   try {
     await knexInstance('f_future_trading').insert({
       blockNumber,
@@ -44,7 +58,7 @@ const handleNewBuyRequest = async (tx, chainId) => {
       executionFees: 0,
       walletAddress,
       status
-    }).onConflict(['hash', 'orderType']).ignore()
+    }).onConflict(['hash', 'orderType', 'positionIndex']).ignore()
     // console.log('save FutureTrading success')
   } catch (e) {
     console.log('--save FutureTrading error')
