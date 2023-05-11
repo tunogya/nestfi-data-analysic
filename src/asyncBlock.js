@@ -58,7 +58,7 @@ class BlockchainData {
   }
   
   async fetchAllTx() {
-    const allTx = [];
+    const allTxSet = new Set();
     let startblock = this.startBlock;
     while (true) {
       try {
@@ -68,9 +68,12 @@ class BlockchainData {
         if (data.result.length === 0) {
           break
         }
-        allTx.push(...data.result)
+        // allTx.push(...data.result)
+        data.result.forEach((tx) => {
+          allTxSet.add(tx)
+        })
         console.log('--fetched tx from', startblock, 'to', data.result[data.result.length - 1].blockNumber)
-        startblock = data.result[data.result.length - 1].blockNumber + 1
+        startblock = data.result[data.result.length - 1].blockNumber
         await new Promise((resolve) => {
           setTimeout(() => {
             resolve()
@@ -81,11 +84,11 @@ class BlockchainData {
         process.exit(0)
       }
     }
-    return allTx
+    return Array.from(allTxSet)
   }
   
   async fetchAllLogsOf(topic0) {
-    const allLog = [];
+    const allLogSet = new Set();
     let startblock = this.startBlock;
     while (true) {
       try {
@@ -95,9 +98,11 @@ class BlockchainData {
         if (data.result.length === 0) {
           break
         }
-        allLog.push(...data.result)
+        data.result.forEach((log) => {
+          allLogSet.add(log)
+        })
         console.log('--fetched log from', startblock, 'to', BigNumber.from(data.result[data.result.length - 1].blockNumber).toNumber())
-        startblock = BigNumber.from(data.result[data.result.length - 1].blockNumber).toNumber() + 1
+        startblock = BigNumber.from(data.result[data.result.length - 1].blockNumber).toNumber()
         await new Promise((resolve) => {
           setTimeout(() => {
             resolve()
@@ -108,7 +113,7 @@ class BlockchainData {
         return []
       }
     }
-    return allLog
+    return Array.from(allLogSet)
   }
   
   async handleTx(tx) {
