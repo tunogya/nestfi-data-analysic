@@ -61,10 +61,6 @@ class BlockchainData {
     const allTxSet = new Set();
     let startblock = this.startBlock;
     while (true) {
-      if (startblock === this.endBlock) {
-        break
-      }
-      
       try {
         const url = `https://api.bscscan.com/api?module=account&action=txlist&address=${this.contractAddress}&startblock=${startblock}&end=${this.endBlock}&sort=asc&apikey=${this.apiKey}`;
         const res = await fetch(url);
@@ -76,8 +72,12 @@ class BlockchainData {
         data.result.forEach((tx) => {
           allTxSet.add(tx)
         })
-        console.log('--fetched tx from', startblock, 'to', data.result[data.result.length - 1].blockNumber)
-        startblock = data.result[data.result.length - 1].blockNumber
+        console.log('--fetched tx from', startblock, 'to', data.result[data.result.length - 1].blockNumber, 'done', data.result.length, 'tx')
+        if (data.result.length < 10000) {
+          startblock = data.result[data.result.length - 1].blockNumber + 1
+        } else {
+          startblock = data.result[data.result.length - 1].blockNumber
+        }
         await new Promise((resolve) => {
           setTimeout(() => {
             resolve()
@@ -95,10 +95,6 @@ class BlockchainData {
     const allLogSet = new Set();
     let startblock = this.startBlock;
     while (true) {
-      if (startblock === this.endBlock) {
-        break
-      }
-      
       try {
         const url = `https://api.bscscan.com/api?module=logs&action=getLogs&fromBlock=${startblock}&toBlock=${this.endBlock}&address=${this.contractAddress}&topic0=${topic0}&apikey=${this.apiKey}`;
         const res = await fetch(url);
@@ -110,7 +106,11 @@ class BlockchainData {
           allLogSet.add(log)
         })
         console.log('--fetched log from', startblock, 'to', BigNumber.from(data.result[data.result.length - 1].blockNumber).toNumber())
-        startblock = BigNumber.from(data.result[data.result.length - 1].blockNumber).toNumber()
+        if (data.result.length < 1000) {
+          startblock = BigNumber.from(data.result[data.result.length - 1].blockNumber).toNumber() + 1
+        } else {
+          startblock = BigNumber.from(data.result[data.result.length - 1].blockNumber).toNumber()
+        }
         await new Promise((resolve) => {
           setTimeout(() => {
             resolve()
