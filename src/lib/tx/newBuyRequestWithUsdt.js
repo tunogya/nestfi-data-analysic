@@ -30,8 +30,8 @@ const handleNewBuyRequestWithUsdt = async (tx, chainId) => {
   const orderPrice = BigNumber.from('0x' + tx.input.slice(330, 394)).div(BigNumber.from(10).pow(14)).toNumber() / 10000;
   
   const limit = BigNumber.from('0x' + tx.input.slice(394, 458)).eq(1);
-  const stopLossPrice = BigNumber.from('0x' + tx.input.slice(458, 522)).div(BigNumber.from(10).pow(16)).toNumber() / 100;
-  const takeProfitPrice = BigNumber.from('0x' + tx.input.slice(522, 586)).div(BigNumber.from(10).pow(16)).toNumber() / 100;
+  const takeProfitPrice = BigNumber.from('0x' + tx.input.slice(458, 522)).div(BigNumber.from(10).pow(16)).toNumber() / 100;
+  const stopLossPrice = BigNumber.from('0x' + tx.input.slice(522, 586)).div(BigNumber.from(10).pow(16)).toNumber() / 100;
   
   // 判断该记录是否已经存在
   const exist = await knexInstance('f_future_trading')
