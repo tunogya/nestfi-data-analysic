@@ -24,6 +24,14 @@ const handleNewBuyRequestWithUsdt = async (tx, chainId) => {
     product = 'BTC/USDT'
   } else if (channelIndex === 2) {
     product = 'BNB/USDT'
+  } else if (channelIndex === 3) {
+    product = 'MATIC/USDT'
+  } else if (channelIndex === 4) {
+    product = 'ADA/USDT'
+  } else if (channelIndex === 5) {
+    product = 'DOGE/USDT'
+  } else if (channelIndex === 6) {
+    product = 'XRP/USDT'
   }
   const leverage = BigNumber.from('0x' + tx.input.slice(202, 266)).toNumber();
   const direction = BigNumber.from('0x' + tx.input.slice(266, 330)).eq(1);
