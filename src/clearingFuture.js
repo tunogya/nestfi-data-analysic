@@ -118,31 +118,43 @@ class ClearingFuture {
     console.log('--find blacklist:', blackList.length)
     const filteredAddresses = addresses.filter(address => !blackList.includes(address))
     console.log('--find filteredAddresses:', filteredAddresses.length)
-    // 查询所有层级的邀请关系
-    const relationshipsWithoutBlacklist = await knexInstance('f_user_relationship')
-        .whereRaw(`LOWER(inviteeWalletAddress) in (${filteredAddresses.map(address => `'${address}'`).join(',')})`)
-        // 初步筛选出有效期内的邀请关系
-        .where('_createTime', '<=', end)
-        .where('status', 'invited')
-    const relationshipsOfBlacklist = await knexInstance('f_user_relationship')
-        .whereRaw(`LOWER(inviteeWalletAddress) in (${blackList.map(address => `'${address}'`).join(',')})`)
-        // 初步筛选出有效期内的邀请关系
-        .where('_createTime', '<=', end)
-        .where('status', 'invited')
-    console.log('--find relationship:', relationshipsWithoutBlacklist.length)
-    const l1clearingDataWithoutBlacklist = this.getClearingData(orders, relationshipsWithoutBlacklist, 1, true)
-    const l2clearingDataWithoutBlacklist = this.getClearingData(orders, relationshipsWithoutBlacklist, 2, true)
-    const l1clearingDataOfBlacklist = this.getClearingData(orders, relationshipsOfBlacklist, 1, false)
-    const l2clearingDataOfBlacklist = this.getClearingData(orders, relationshipsOfBlacklist, 2, false)
-    
+    const trx = await knexInstance.transaction()
     // 5. 与上步操作原子性地，更新对应的单号所有记录，标记为已清算
     // 插入清算表，同时更新订单表，设置为已清算
-    const trx = await knexInstance.transaction()
     try {
-      await this.insertClearingData(l1clearingDataWithoutBlacklist, date, trx)
-      await this.insertClearingData(l2clearingDataWithoutBlacklist, date, trx)
-      await this.insertClearingData(l1clearingDataOfBlacklist, date, trx)
-      await this.insertClearingData(l2clearingDataOfBlacklist, date, trx)
+      if (filteredAddresses.length === 0) {
+        console.log('no addresses to be cleared')
+      } else {
+        // 查询所有层级的邀请关系
+        const relationshipsWithoutBlacklist = await knexInstance('f_user_relationship')
+            .whereRaw(`LOWER(inviteeWalletAddress) in (${filteredAddresses.map(address => `'${address}'`).join(',')})`)
+            // 初步筛选出有效期内的邀请关系
+            .where('_createTime', '<=', end)
+            .where('status', 'invited')
+        console.log('--find relationship:', relationshipsWithoutBlacklist.length)
+        const l1clearingDataWithoutBlacklist = this.getClearingData(orders, relationshipsWithoutBlacklist, 1, true)
+        const l2clearingDataWithoutBlacklist = this.getClearingData(orders, relationshipsWithoutBlacklist, 2, true)
+        try {
+          await this.insertClearingData(l1clearingDataWithoutBlacklist, date, trx)
+          await this.insertClearingData(l2clearingDataWithoutBlacklist, date, trx)
+        } catch (e) {
+          console.log('insert clearing data error:', e)
+          return
+        }
+      }
+      if (blackList.length === 0) {
+        console.log('no blacklist to be cleared')
+      } else {
+        const relationshipsOfBlacklist = await knexInstance('f_user_relationship')
+            .whereRaw(`LOWER(inviteeWalletAddress) in (${blackList.map(address => `'${address}'`).join(',')})`)
+            // 初步筛选出有效期内的邀请关系
+            .where('_createTime', '<=', end)
+            .where('status', 'invited')
+        const l1clearingDataOfBlacklist = this.getClearingData(orders, relationshipsOfBlacklist, 1, false)
+        const l2clearingDataOfBlacklist = this.getClearingData(orders, relationshipsOfBlacklist, 2, false)
+        await this.insertClearingData(l1clearingDataOfBlacklist, date, trx)
+        await this.insertClearingData(l2clearingDataOfBlacklist, date, trx)
+      }
       await trx('f_future_trading')
           .whereIn('_id', orders.map(order => order._id))
           .update({
