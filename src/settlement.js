@@ -37,6 +37,9 @@ class Settlement {
     })
     for (let i = 0; i < clearingOrdersWithoutBlacklist.length; i++) {
       const {walletAddress, reward} = clearingOrdersWithoutBlacklist[i]
+      if (reward === 0) {
+        continue
+      }
       if (!settlementMap[walletAddress]) {
         settlementMap[walletAddress] = {
           settlementAmount: 0,
