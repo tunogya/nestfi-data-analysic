@@ -16,7 +16,6 @@ const knexInstance = knex({
 
 export const getExecutePrice = async (hash, chainId, product) => {
   const prices = await knexInstance('f_future_price')
-      .select('ethprice', 'btcprice', 'bnbprice')
       .where({hash, chainId})
   
   if (prices.length === 0) {
