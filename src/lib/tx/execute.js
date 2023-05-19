@@ -11,10 +11,10 @@ const handleExecute = async (tx, chainId) => {
   
   let maticprice = 0, adaprice = 0, dogeprice = 0, xrpprice = 0;
   if (blockNumber >= 28341342) {
-    maticprice = BigNumber.from('0x' + tx.input.slice(202, 266)).div(BigNumber.from(10).pow(14)).toNumber() / 10000;
-    adaprice = BigNumber.from('0x' + tx.input.slice(266, 330)).div(BigNumber.from(10).pow(14)).toNumber() / 10000;
-    dogeprice = BigNumber.from('0x' + tx.input.slice(330, 394)).div(BigNumber.from(10).pow(14)).toNumber() / 10000;
-    xrpprice = BigNumber.from('0x' + tx.input.slice(394, 458)).div(BigNumber.from(10).pow(14)).toNumber() / 10000;
+    maticprice = BigNumber.from('0x' + tx.input.slice(202, 266)).div(BigNumber.from(10).pow(12)).toNumber() / 1000000;
+    adaprice = BigNumber.from('0x' + tx.input.slice(266, 330)).div(BigNumber.from(10).pow(12)).toNumber() / 1000000;
+    dogeprice = BigNumber.from('0x' + tx.input.slice(330, 394)).div(BigNumber.from(10).pow(12)).toNumber() / 1000000;
+    xrpprice = BigNumber.from('0x' + tx.input.slice(394, 458)).div(BigNumber.from(10).pow(12)).toNumber() / 1000000;
   }
   
   try {
