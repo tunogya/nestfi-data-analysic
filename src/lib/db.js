@@ -24,13 +24,12 @@ export const getExecutePrice = async (hash, chainId, product) => {
   }
   let orderPrice = null
   const price = prices[0];
-  console.log(price)
   if (product === 'ETH/USDT') {
-    orderPrice = price.ethprice
+    orderPrice = price.ethPrice
   } else if (product === 'BTC/USDT') {
-    orderPrice = price.btcprice
+    orderPrice = price.btcPrice
   } else if (product === 'BNB/USDT') {
-    orderPrice = price.bnbprice
+    orderPrice = price.bnbPrice
   } else if (product === 'MATIC/USDT') {
     orderPrice = price.maticPrice
   } else if (product === 'ADA/USDT') {
