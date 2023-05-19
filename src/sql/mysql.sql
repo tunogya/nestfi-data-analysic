@@ -47,6 +47,10 @@ CREATE TABLE IF NOT EXISTS f_future_price
     ethPrice      decimal(12, 2) NOT NULL,
     btcPrice      decimal(12, 2) NOT NULL,
     bnbPrice      decimal(12, 2) NOT NULL,
+    maticPrice    decimal(12, 2) NOT NULL,
+    adaPrice      decimal(12, 2) NOT NULL,
+    dogePrice     decimal(12, 2) NOT NULL,
+    xrpPrice      decimal(12, 2) NOT NULL,
     status        boolean        NOT NULL,
     UNIQUE (hash, chainId)
 );
