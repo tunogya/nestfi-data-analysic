@@ -146,6 +146,7 @@ class BlockchainData {
         await handleStopPrice(tx, this.chainId)
         break;
       case '0xc6190ed6':
+      case '0x1570fb93':
         await handleExecute(tx, this.chainId)
         break;
       default:
