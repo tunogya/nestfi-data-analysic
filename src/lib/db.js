@@ -31,6 +31,14 @@ export const getExecutePrice = async (hash, chainId, product) => {
     orderPrice = price.btcprice
   } else if (product === 'BNB/USDT') {
     orderPrice = price.bnbprice
+  } else if (product === 'MATIC/USDT') {
+    orderPrice = price.maticprice
+  } else if (product === 'ADA/USDT') {
+    orderPrice = price.adaprice
+  } else if (product === 'DOGE/USDT') {
+    orderPrice = price.dogeprice
+  } else if (product === 'XRP/USDT') {
+    orderPrice = price.xrpprice
   }
   return orderPrice
 }
