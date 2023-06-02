@@ -17,14 +17,12 @@ const handleBuyLog = async (log, chainId) => {
   // order 的价格不代表最终执行价格，需要通过 f_future_price 来获取
   const order = await getPreviousOrderState(positionIndex, chainId, timeStamp);
   if (!order) {
-    console.log('order is null', positionIndex, chainId, timeStamp)
     return
   }
   const {product, leverage, margin, volume, direction, stopLossPrice, takeProfitPrice, walletAddress, currency} = order;
   
   const orderPrice = await getExecutePrice(hash, chainId, product);
   if (!orderPrice) {
-    console.log('orderPrice is null', hash, chainId, product)
     return
   }
   const fees = Number(((amount * leverage) * 0.0005).toFixed(4));

@@ -51,7 +51,6 @@ const handleNewBuyRequestWithUsdt = async (tx, chainId) => {
       .first();
   
   if (exist) {
-    console.log('exist request order', hash)
     return;
   }
   

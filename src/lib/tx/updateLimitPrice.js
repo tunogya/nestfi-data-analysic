@@ -38,7 +38,6 @@ const handleUpdateLimitPrice = async (tx, chainId) => {
     // console.log('save FutureTrading success')
   } catch (e) {
     console.log('--save FutureTrading error')
-    console.log(e)
   }
 }
 

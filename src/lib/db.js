@@ -52,7 +52,6 @@ export const getPreviousOrderState = async (positionIndex, chainId, timeStamp) =
       .where({status: true})
       .orderBy('timeStamp', 'desc')
   if (orders.length === 0) {
-    console.log(`db error: positionIndex: ${positionIndex}, chainId: ${chainId}, timeStamp: ${timeStamp}`)
     return null
   }
   return orders[0];

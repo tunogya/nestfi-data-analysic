@@ -19,7 +19,6 @@ const handleSellLog = async (log, chainId) => {
   try {
     const order = await getPreviousOrderState(positionIndex, chainId, timeStamp);
     if (!order) {
-      console.log('order is null', positionIndex, chainId, timeStamp)
       return
     }
     const {product, leverage, direction, stopLossPrice, takeProfitPrice, currency, margin} = order;
@@ -31,19 +30,16 @@ const handleSellLog = async (log, chainId) => {
       .andWhere('status', true);
     
     if (open_orders.length === 0) {
-      console.log('no open orders', positionIndex, chainId, timeStamp)
       return
     }
     const basePrice = open_orders[0].orderPrice;
     if (!basePrice) {
-      console.log('basePrice is null', positionIndex, chainId, timeStamp)
       return
     }
     
     // 获取sell的执行价格，通过 execute 获取实际的卖出价格
     const orderPrice = await getExecutePrice(hash, chainId, product);
     if (!orderPrice) {
-      console.log('orderPrice is null', positionIndex, chainId, timeStamp)
       return
     }
     
@@ -87,10 +83,8 @@ const handleSellLog = async (log, chainId) => {
             walletAddress,
             status: true
           }).onConflict(['hash', 'orderType', 'positionIndex']).ignore()
-          // console.log('save FutureTrading success')
         } catch (e) {
           console.log('--save FutureTrading error')
-          console.log(e)
         }
       } else {
         // 用户限价卖出
@@ -118,7 +112,6 @@ const handleSellLog = async (log, chainId) => {
             walletAddress,
             status: true
           }).onConflict(['hash', 'orderType', 'positionIndex']).ignore()
-          // console.log('save FutureTrading success')
         } catch (e) {
           console.log('--save FutureTrading error')
           console.log(e)
@@ -147,10 +140,8 @@ const handleSellLog = async (log, chainId) => {
             walletAddress,
             status: true
           }).onConflict(['hash', 'orderType', 'positionIndex']).ignore()
-          // console.log('save FutureTrading success')
         } catch (e) {
           console.log('--save FutureTrading error')
-          console.log(e)
         }
       }
     } catch (e) {

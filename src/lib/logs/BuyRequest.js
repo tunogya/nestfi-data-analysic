@@ -19,8 +19,7 @@ const handleBuyRequestLog = async (log, chainId) => {
           chainId,
         })
     if (orders.length === 0) {
-      console.log('BuyRequest not found')
-      process.exit(1)
+      return
     }
     const order = orders[0];
     const {leverage} = order;

@@ -36,7 +36,6 @@ const handleExecute = async (tx, chainId) => {
     }).onConflict(['hash', 'chainId']).ignore()
   } catch (e) {
     console.log(`save Future Price error`)
-    console.log(e)
   }
 }
 export default handleExecute

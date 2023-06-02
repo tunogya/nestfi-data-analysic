@@ -15,14 +15,12 @@ const handleLiquidateLog = async (log, chainId) => {
   
   const order = await getPreviousOrderState(positionIndex, chainId, timeStamp);
   if (!order) {
-    console.log('order is null', positionIndex, chainId, timeStamp)
     return
   }
   
   const { product, leverage, margin, direction, stopLossPrice, takeProfitPrice, currency } = order;
   const orderPrice = await getExecutePrice(hash, chainId, product);
   if (!orderPrice) {
-    console.log('orderPrice is null', hash, chainId, product)
     return
   }
 
@@ -50,7 +48,6 @@ const handleLiquidateLog = async (log, chainId) => {
       walletAddress,
       status: true
     }).onConflict(['hash', 'orderType', 'positionIndex']).ignore()
-    // console.log('save FutureTrading success')
   } catch (e) {
     console.log('--save FutureTrading error')
     console.log(e)
