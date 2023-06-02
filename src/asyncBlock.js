@@ -42,6 +42,7 @@ class BlockchainData {
           .select('blockNumber')
           .where('chainId', this.chainId)
           .whereNull('positionIndex')
+          .where('status', true)
           .orderBy('blockNumber', 'asc')
           .limit(1);
       if (res1.length === 0 || res2.length === 0) {
