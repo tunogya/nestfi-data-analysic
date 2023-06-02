@@ -6,8 +6,8 @@
   "scripts": {
     "asyncBlock": "pm2 start src/asyncBlock.js --name initAsyncBlock",
     "cronAsyncBlock": "pm2 start src/asyncBlock.js --name cronAsyncBlock --cron '*/10 * * * *'",
-    "cronClearingFuture": "pm2 start src/clearingFuture.js --name clearing --cron '0 9 * * *'",
-    "cronSettlement": "pm2 start src/settlement.js --name settlement --cron '0 10 * * *'"
+    "cronClearingFuture": "pm2 start src/clearingFuture.js --name clearing --cron '0 1 * * *'",
+    "cronSettlement": "pm2 start src/settlement.js --name settlement --cron '0 2 * * *'"
   },
   "dependencies": {
     "@ethersproject/bignumber": "^5.7.0",
