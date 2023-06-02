@@ -38,9 +38,20 @@ class BlockchainData {
           .where('chainId', this.chainId)
           .orderBy('blockNumber', 'desc')
           .limit(1);
+      const res3 = await knexInstance('f_future_trading')
+          .select('blockNumber')
+          .where('chainId', this.chainId)
+          .whereNull('positionIndex')
+          .orderBy('blockNumber', 'desc')
+          .limit(1);
       if (res1.length === 0 || res2.length === 0) {
         this.startBlock = 0;
       } else {
+        if (res3.length !== 0) {
+          console.log('--found BuyRequest without positionIndex, blockNumber:', res3[0].blockNumber)
+          this.startBlock = res3[0].blockNumber;
+          return true;
+        }
         this.startBlock = Math.max(res1[0].blockNumber, res2[0].blockNumber) + 1;
       }
       console.log('--set startblock to', this.startBlock, 'done\n')
