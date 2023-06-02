@@ -86,7 +86,7 @@ class ClearingFuture {
       return
     }
     
-    const start = new Date(date + 'T00:00:00.000Z')
+    const start = new Date(date + 'T08:00:00.000Z')
     const end = new Date(start.getTime() + 24 * 60 * 60 * 1000)
     
     console.log('clearing future for kol\n--start:', start, 'end:', end)
