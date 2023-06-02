@@ -28,8 +28,16 @@ class BlockchainData {
   async fetchStartBlock() {
     console.log('connect db and fetch startblock...')
     try {
-      const res1 = await knexInstance('f_future_trading').select('blockNumber').orderBy('blockNumber', 'desc').limit(1);
-      const res2 = await knexInstance('f_future_price').select('blockNumber').orderBy('blockNumber', 'desc').limit(1);
+      const res1 = await knexInstance('f_future_trading')
+          .select('blockNumber')
+          .where('chainId', this.chainId)
+          .orderBy('blockNumber', 'desc')
+          .limit(1);
+      const res2 = await knexInstance('f_future_price')
+          .select('blockNumber')
+          .where('chainId', this.chainId)
+          .orderBy('blockNumber', 'desc')
+          .limit(1);
       if (res1.length === 0 || res2.length === 0) {
         this.startBlock = 0;
       } else {
