@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "asyncBlock": "pm2 start src/asyncBlock.js --name initAsyncBlock",
-    "cronAsyncBlock": "pm2 start src/asyncBlock.js --name cronAsyncBlock --cron '*/10 * * * *'",
+    "cronAsyncBlock": "pm2 start src/asyncBlock.js --name cronAsyncBlock --cron '*/30 * * * *'",
     "cronClearingFuture": "pm2 start src/clearingFuture.js --name clearing --cron '0 1 * * *'",
     "cronSettlement": "pm2 start src/settlement.js --name settlement --cron '0 2 * * *'"
   },
