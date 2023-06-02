@@ -91,3 +91,39 @@ CREATE TABLE IF NOT EXISTS B_SETTLEMENT
     status             boolean,
     UNIQUE (date, walletAddress, chainId, type)
 )
+
+-- 创建工资表
+DROP TABLE IF EXISTS f_wages CASCADE;
+CREATE TABLE IF NOT EXISTS f_wages
+(
+    _id                serial         NOT NULL PRIMARY KEY,
+    _createTime        timestamp      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    _updateTime        timestamp      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    startTime          timestamp      NOT NULL,
+    endTime            timestamp      NOT NULL,
+    walletAddress      varchar(42)    NOT NULL,
+    owner              varchar(20),
+    type               varchar(20),
+    settlementAmount   decimal(12, 2) NOT NULL,
+    settlementCurrency varchar(20)    NOT NULL,
+    remark             varchar(200),
+    hash               varchar(66),
+    status             boolean
+);
+
+-- 推广费用表
+DROP TABLE IF EXISTS f_market CASCADE;
+CREATE TABLE IF NOT EXISTS f_market
+(
+    _id                serial         NOT NULL PRIMARY KEY,
+    _createTime        timestamp      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    _updateTime        timestamp      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    walletAddress      varchar(42)    NOT NULL,
+    owner              varchar(20),
+    type               varchar(20),
+    settlementAmount   decimal(12, 2) NOT NULL,
+    settlementCurrency varchar(20)    NOT NULL,
+    remark             varchar(200),
+    hash               varchar(66),
+    status             boolean
+)
