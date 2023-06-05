@@ -17,12 +17,18 @@ import knexInstance from "./lib/db.js";
 dotenv.config();
 
 class BlockchainData {
-  constructor(CONTRACT_ADDRESS, API_KEY) {
-    this.chainId = 56;
+  constructor(CHAINID) {
+    this.chainId = CHAINID;
     this.startBlock = 0;
     this.endBlock = 0;
-    this.contractAddress = CONTRACT_ADDRESS;
-    this.apiKey = API_KEY;
+    if (CHAINID === 56) {
+      this.contractAddress = "0x02904e03937E6a36D475025212859f1956BeC3f0";
+      this.apiKey = process.env.BSCSCAN_API_KEY;
+    } else if (CHAINID === 534353) {
+      this.contractAddress = "0xc39dC1385a44fBB895991580EA55FC10e7451cB3";
+    } else {
+      throw new Error('chainId error')
+    }
   }
   
   async fetchStartBlock() {
@@ -66,7 +72,15 @@ class BlockchainData {
   async fetchEndBlock() {
     try {
       console.log('fetch endblock...')
-      const res = await fetch(`https://api.bscscan.com/api?module=proxy&action=eth_blockNumber&apikey=${this.apiKey}`)
+      let url;
+      if (this.chainId === 56) {
+        url = `https://api.bscscan.com/api?module=proxy&action=eth_blockNumber&apikey=${this.apiKey}`
+      } else if (this.chainId === 534353) {
+        url = `https://blockscout.scroll.io/api?module=block&action=eth_block_number`
+      } else {
+        throw new Error('chainId error')
+      }
+      const res = await fetch(url);
       const data = await res.json()
       this.endBlock = parseInt(data.result, 16);
       console.log('--set endblock to', this.endBlock, 'done\n')
@@ -82,7 +96,14 @@ class BlockchainData {
     let startblock = this.startBlock;
     while (true) {
       try {
-        const url = `https://api.bscscan.com/api?module=account&action=txlist&address=${this.contractAddress}&startblock=${startblock}&end=${this.endBlock}&sort=asc&apikey=${this.apiKey}`;
+        let url;
+        if (this.chainId === 56) {
+          url = `https://api.bscscan.com/api?module=account&action=txlist&address=${this.contractAddress}&startblock=${startblock}&end=${this.endBlock}&sort=asc&apikey=${this.apiKey}`;
+        } else if (this.chainId === 534353) {
+          url = `https://blockscout.scroll.io/api?module=account&action=txlist&address=${this.contractAddress}`
+        } else {
+          throw new Error('chainId error')
+        }
         const res = await fetch(url);
         const data = await res.json();
         if (data.result.length === 0) {
@@ -94,9 +115,9 @@ class BlockchainData {
         })
         console.log('--fetched tx from', startblock, 'to', data.result[data.result.length - 1].blockNumber, 'done', data.result.length, 'tx')
         if (data.result.length < 10000) {
-          startblock = data.result[data.result.length - 1].blockNumber + 1
+          startblock = Number(data.result[data.result.length - 1].blockNumber) + 1
         } else {
-          startblock = data.result[data.result.length - 1].blockNumber
+          startblock = Number(data.result[data.result.length - 1].blockNumber)
         }
         await new Promise((resolve) => {
           setTimeout(() => {
@@ -114,9 +135,17 @@ class BlockchainData {
   async fetchAllLogsOf(topic0) {
     const allLogSet = new Set();
     let startblock = this.startBlock;
+    let url;
+    if (this.chainId === 56) {
+      url = `https://api.bscscan.com/api?module=logs&action=getLogs&fromBlock=${startblock}&toBlock=${this.endBlock}&address=${this.contractAddress}&topic0=${topic0}&apikey=${this.apiKey}`
+    } else if (this.chainId === 534353) {
+      url = `https://blockscout.scroll.io/api?module=logs&action=getLogs&fromBlock=${startblock}&toBlock=${this.endBlock}&address=${this.contractAddress}&topic0=${topic0}`
+    } else {
+      throw new Error('chainId error')
+    }
+    
     while (true) {
       try {
-        const url = `https://api.bscscan.com/api?module=logs&action=getLogs&fromBlock=${startblock}&toBlock=${this.endBlock}&address=${this.contractAddress}&topic0=${topic0}&apikey=${this.apiKey}`;
         const res = await fetch(url);
         const data = await res.json();
         if (data.result.length === 0) {
@@ -192,18 +221,11 @@ class BlockchainData {
 }
 
 class Main {
-  constructor() {
-    this.blockchainData = new BlockchainData(
-        '0x02904e03937E6a36D475025212859f1956BeC3f0',
-        process.env.BSCSCAN_API_KEY);
+  constructor(CHAINID) {
+    this.blockchainData = new BlockchainData(CHAINID);
   }
   
   async run() {
-    // check bscscan api key
-    if (!process.env.BSCSCAN_API_KEY) {
-      console.log('please set BSCSCAN_API_KEY')
-      process.exit(0)
-    }
     console.log('start execute', new Date());
     const startBlockSucceed = await this.blockchainData.fetchStartBlock();
     if (!startBlockSucceed) {
@@ -274,8 +296,12 @@ class Main {
   }
 }
 
-const main = new Main();
-
-main.run().finally(() => {
-  console.log('executed finally:' + new Date())
-})
+(async () => {
+  const bsc = new Main(56);
+  const scroll = new Main(534353);
+  
+  await bsc.run()
+  console.log('bsc executed finally:' + new Date());
+  await scroll.run()
+  console.log('scroll executed finally:' + new Date());
+})();

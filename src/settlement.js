@@ -119,13 +119,15 @@ class Settlement {
   }
 }
 
-const settlement = new Settlement(56)
-
-settlement.handleYesterday().catch(e => {
-  console.log('main.start error', e)
-}).finally(() => {
-  console.log('executed finally:' + new Date())
-})
+(async () => {
+  const bsc = new Settlement(56);
+  const scroll = new Settlement(534353);
+  
+  await bsc.handleYesterday()
+  console.log('bsc executed finally:' + new Date());
+  await scroll.handleYesterday()
+  console.log('scroll executed finally:' + new Date());
+})()
 
 // settlement.handleHistory().catch(e => {
 //   console.log('clearing history error', e)
