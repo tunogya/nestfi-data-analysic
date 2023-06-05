@@ -94,7 +94,7 @@ class BlockchainData {
   async fetchAllTx() {
     const allTxSet = new Set();
     let startblock = this.startBlock;
-    while (true) {
+    while (startblock <= this.endBlock) {
       try {
         let url;
         if (this.chainId === 56) {
@@ -118,9 +118,6 @@ class BlockchainData {
           startblock = Number(data.result[data.result.length - 1].blockNumber) + 1
         } else {
           startblock = Number(data.result[data.result.length - 1].blockNumber)
-        }
-        if (startblock > Number(this.endBlock)) {
-          break
         }
         await new Promise((resolve) => {
           setTimeout(() => {
@@ -147,7 +144,7 @@ class BlockchainData {
       throw new Error('chainId error')
     }
     
-    while (true) {
+    while (startblock <= this.endBlock) {
       try {
         const res = await fetch(url);
         const data = await res.json();
@@ -162,9 +159,6 @@ class BlockchainData {
           startblock = BigNumber.from(data.result[data.result.length - 1].blockNumber).toNumber() + 1
         } else {
           startblock = BigNumber.from(data.result[data.result.length - 1].blockNumber).toNumber()
-        }
-        if (startblock > Number(this.endBlock)) {
-          break
         }
         await new Promise((resolve) => {
           setTimeout(() => {
