@@ -121,12 +121,12 @@ class Settlement {
 
 (async () => {
   const bsc = new Settlement(56);
-  const scroll = new Settlement(534353);
+  // const scroll = new Settlement(534353);
   
-  await bsc.handleYesterday()
+  await bsc.handleYesterday();
   console.log('bsc executed finally:' + new Date());
-  await scroll.handleYesterday()
-  console.log('scroll executed finally:' + new Date());
+  // await scroll.handleYesterday()
+  // console.log('scroll executed finally:' + new Date());
 })()
 
 // settlement.handleHistory().catch(e => {

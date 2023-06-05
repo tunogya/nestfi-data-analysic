@@ -190,14 +190,14 @@ class ClearingFuture {
 
 (async () => {
   const bsc = new ClearingFuture(56);
-  const scroll = new ClearingFuture(534353);
+  // const scroll = new ClearingFuture(534353);
   
   bsc.handleYesterday().then(() => {
     console.log('bsc executed finally:' + new Date());
   })
-  scroll.handleYesterday().then(() => {
-    console.log('scroll executed finally:' + new Date());
-  })
+  // scroll.handleYesterday().then(() => {
+  //   console.log('scroll executed finally:' + new Date());
+  // })
 })();
 
 // clearing.handleHistory().catch(e => {
