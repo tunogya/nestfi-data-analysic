@@ -163,6 +163,9 @@ class BlockchainData {
         } else {
           startblock = BigNumber.from(data.result[data.result.length - 1].blockNumber).toNumber()
         }
+        if (startblock > this.endBlock) {
+          break
+        }
         await new Promise((resolve) => {
           setTimeout(() => {
             resolve()
