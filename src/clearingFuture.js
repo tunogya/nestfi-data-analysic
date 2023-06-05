@@ -4,8 +4,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 class ClearingFuture {
-  constructor() {
-  
+  constructor(chainId) {
+    this.chainId = chainId
   }
   
   checkDate(date) {
@@ -68,7 +68,7 @@ class ClearingFuture {
         date,
         walletAddress: address,
         relationshipLevel: data.level,
-        chainId: 56,
+        chainId: this.chainId,
         tradingVolume: data.tradingVolume,
         fees: data.fees,
         reward: data.reward,
@@ -94,6 +94,7 @@ class ClearingFuture {
     const orders = await knexInstance('f_future_trading')
         .where('timeStamp', '>=', start)
         .where('timeStamp', '<', end)
+        .where('chainId', this.chainId)
         .where('status', true)
         .whereIn('orderType', ['MARKET_CLOSE_FEE', 'TP_ORDER_FEE', 'SL_ORDER_FEE',
           'MARKET_LIQUIDATION', 'MARKET_ORDER_FEE', 'LIMIT_ORDER_FEE'])
@@ -187,7 +188,7 @@ class ClearingFuture {
   }
 }
 
-const clearing = new ClearingFuture();
+const clearing = new ClearingFuture(56);
 clearing.handleYesterday().catch(e => {
   console.log('clearing yesterday error', e)
 }).finally(() => {

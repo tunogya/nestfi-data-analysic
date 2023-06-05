@@ -4,8 +4,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 class Settlement {
-  constructor() {
-  
+  constructor(chainId) {
+    this.chainId = chainId
   }
   
   checkDate(date) {
@@ -16,13 +16,13 @@ class Settlement {
     return true
   }
   
-  async settlementFutureKOL(date, chainId) {
+  async settlementFutureKOL(date) {
     const settlementMap = {}
     const clearingOrders = await knexInstance('b_clearing_kol')
         .where('date', date)
         .where('status', true)
         .where('settlementStatus', false)
-        .where('chainId', chainId)
+        .where('chainId', this.chainId)
     if (clearingOrders.length === 0) {
       console.log('no clearingOrders to be settled')
       return {}
@@ -62,7 +62,7 @@ class Settlement {
     
     console.log('settle:', date)
     
-    const settlementFutureKOLMap = await this.settlementFutureKOL(date, 56)
+    const settlementFutureKOLMap = await this.settlementFutureKOL(date)
     
     if (Object.keys(settlementFutureKOLMap).length === 0) {
       console.log('no settlementFutureKOLMap')
@@ -88,6 +88,7 @@ class Settlement {
       await trx('b_clearing_kol')
           .where('date', date)
           .where('status', true)
+          .where('chainId', this.chainId)
           .whereRaw(`LOWER(walletAddress) in (${walletAddresses.map(address => `'${address}'`).join(',')})`)
           .where('settlementStatus', false)
           .update({settlementStatus: true})
@@ -118,7 +119,7 @@ class Settlement {
   }
 }
 
-const settlement = new Settlement()
+const settlement = new Settlement(56)
 
 settlement.handleYesterday().catch(e => {
   console.log('main.start error', e)
