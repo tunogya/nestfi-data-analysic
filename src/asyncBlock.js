@@ -119,6 +119,9 @@ class BlockchainData {
         } else {
           startblock = Number(data.result[data.result.length - 1].blockNumber)
         }
+        if (startblock > this.endBlock) {
+          break
+        }
         await new Promise((resolve) => {
           setTimeout(() => {
             resolve()
