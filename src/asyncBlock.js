@@ -119,7 +119,7 @@ class BlockchainData {
         } else {
           startblock = Number(data.result[data.result.length - 1].blockNumber)
         }
-        if (startblock > this.endBlock) {
+        if (startblock > Number(this.endBlock)) {
           break
         }
         await new Promise((resolve) => {
@@ -163,7 +163,7 @@ class BlockchainData {
         } else {
           startblock = BigNumber.from(data.result[data.result.length - 1].blockNumber).toNumber()
         }
-        if (startblock > this.endBlock) {
+        if (startblock > Number(this.endBlock)) {
           break
         }
         await new Promise((resolve) => {
