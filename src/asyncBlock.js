@@ -100,7 +100,7 @@ class BlockchainData {
         if (this.chainId === 56) {
           url = `https://api.bscscan.com/api?module=account&action=txlist&address=${this.contractAddress}&startblock=${startblock}&end=${this.endBlock}&sort=asc&apikey=${this.apiKey}`;
         } else if (this.chainId === 534353) {
-          url = `https://blockscout.scroll.io/api?module=account&action=txlist&address=${this.contractAddress}`
+          url = `https://blockscout.scroll.io/api?module=account&action=txlist&address=${this.contractAddress}&start_block=${startblock}&end_block=${this.endBlock}&sort=asc`
         } else {
           throw new Error('chainId error')
         }
