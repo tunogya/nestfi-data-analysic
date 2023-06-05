@@ -136,16 +136,15 @@ class BlockchainData {
     const allLogSet = new Set();
     let startblock = this.startBlock;
     let url;
-    if (this.chainId === 56) {
-      url = `https://api.bscscan.com/api?module=logs&action=getLogs&fromBlock=${startblock}&toBlock=${this.endBlock}&address=${this.contractAddress}&topic0=${topic0}&apikey=${this.apiKey}`
-    } else if (this.chainId === 534353) {
-      url = `https://blockscout.scroll.io/api?module=logs&action=getLogs&fromBlock=${startblock}&toBlock=${this.endBlock}&address=${this.contractAddress}&topic0=${topic0}`
-    } else {
-      throw new Error('chainId error')
-    }
-    
     while (startblock <= this.endBlock) {
       try {
+        if (this.chainId === 56) {
+          url = `https://api.bscscan.com/api?module=logs&action=getLogs&fromBlock=${startblock}&toBlock=${this.endBlock}&address=${this.contractAddress}&topic0=${topic0}&apikey=${this.apiKey}`
+        } else if (this.chainId === 534353) {
+          url = `https://blockscout.scroll.io/api?module=logs&action=getLogs&fromBlock=${startblock}&toBlock=${this.endBlock}&address=${this.contractAddress}&topic0=${topic0}`
+        } else {
+          throw new Error('chainId error')
+        }
         const res = await fetch(url);
         const data = await res.json();
         if (data.result.length === 0) {
