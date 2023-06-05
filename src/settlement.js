@@ -44,7 +44,7 @@ class Settlement {
         settlementMap[walletAddress] = {
           settlementAmount: 0,
           settlementCurrency: 'NEST',
-          chainId,
+          chainId: this.chainId,
           type: 'future'
         }
       }
