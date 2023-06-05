@@ -10,7 +10,8 @@ const handleExecute = async (tx, chainId) => {
   const bnbprice = BigNumber.from('0x' + tx.input.slice(138, 202)).div(BigNumber.from(10).pow(12)).toNumber() / 1000000;
   
   let maticprice = 0, adaprice = 0, dogeprice = 0, xrpprice = 0;
-  if (blockNumber >= 28341342) {
+  if (chainId === 56 && blockNumber < 28341342) {
+  } else {
     maticprice = BigNumber.from('0x' + tx.input.slice(202, 266)).div(BigNumber.from(10).pow(12)).toNumber() / 1000000;
     adaprice = BigNumber.from('0x' + tx.input.slice(266, 330)).div(BigNumber.from(10).pow(12)).toNumber() / 1000000;
     dogeprice = BigNumber.from('0x' + tx.input.slice(330, 394)).div(BigNumber.from(10).pow(12)).toNumber() / 1000000;
