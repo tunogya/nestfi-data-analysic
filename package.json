@@ -4,9 +4,9 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
-    "asyncBlock": "pm2 start src/asyncBlock.js --name initAsyncBlock",
-    "cronClearing": "pm2 start src/clearing.js --name clearing --cron '0 9 * * *'",
-    "cronSettlement": "pm2 start src/settlement.js --name settlement --cron '0 10 * * *'"
+    "asyncBlock": "pm2 start src/asyncBlock.js",
+    "cronClearing": "pm2 start src/clearing.js --cron '0 9 * * *'",
+    "cronSettlement": "pm2 start src/settlement.js --cron '0 10 * * *'"
   },
   "dependencies": {
     "@ethersproject/bignumber": "^5.7.0",
