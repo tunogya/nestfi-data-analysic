@@ -220,7 +220,7 @@ class BlockchainData {
   }
 }
 
-class Main {
+class AsyncBlock {
   constructor(CHAINID) {
     this.blockchainData = new BlockchainData(CHAINID);
   }
@@ -296,12 +296,4 @@ class Main {
   }
 }
 
-(async () => {
-  const bsc = new Main(56);
-  const scroll = new Main(534353);
-  
-  await bsc.run()
-  console.log('bsc executed finally:' + new Date());
-  await scroll.run()
-  console.log('scroll executed finally:' + new Date());
-})();
+export default AsyncBlock;

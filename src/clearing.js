@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-class ClearingFuture {
+class Clearing {
   constructor(chainId) {
     this.chainId = chainId
   }
@@ -189,7 +189,7 @@ class ClearingFuture {
 }
 
 (async () => {
-  const bsc = new ClearingFuture(56);
+  const bsc = new Clearing(56);
   // const scroll = new ClearingFuture(534353);
   
   bsc.handleYesterday().then(() => {
