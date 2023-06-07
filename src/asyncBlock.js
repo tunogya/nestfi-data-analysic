@@ -240,18 +240,38 @@ class AsyncBlock {
     console.log('--start fetching all tx')
     const allTx = await this.blockchainData.fetchAllTx();
     console.log('--fetched', allTx.length, 'tx done\n')
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve()
+      }, 1000)
+    })
     const newBuyRequestTopic = '0xbf4cbb4fa8c0e1d1155a78077bea3d41807ceece161cfae79165e71b82bbeee1'
     console.log('--start fetching newBuyRequest log')
     const allNewBuyRequestLog = await this.blockchainData.fetchAllLogsOf(newBuyRequestTopic);
     console.log('--fetched', allNewBuyRequestLog.length, 'newBuyRequest log done\n')
     const buyTopic = '0xf7735c8cb2a65788ca663fc8415b7c6a66cd6847d58346d8334e8d52a599d3df'
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve()
+      }, 1000)
+    })
     console.log('--start fetching buy log')
     const allBuyLog = await this.blockchainData.fetchAllLogsOf(buyTopic);
     console.log('--fetched', allBuyLog.length, 'buy log done\n')
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve()
+      }, 1000)
+    })
     const liquidateTopic = '0xf2bcfabb628d3e0f92291f1e0bc5f2322f8ac3af9e187670152968100e6b60a6'
     console.log('--start fetching liquidate log')
     const allLiquidateLog = await this.blockchainData.fetchAllLogsOf(liquidateTopic);
     console.log('--fetched', allLiquidateLog.length, 'liquidate log done\n')
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve()
+      }, 1000)
+    })
     const sellTopic = '0xb69e24112cb4483e933dc3bda2d474e8d511e1d7058a983fe98a7d5d78fb9743'
     console.log('--start fetching sell log')
     const allSellLog = await this.blockchainData.fetchAllLogsOf(sellTopic);
