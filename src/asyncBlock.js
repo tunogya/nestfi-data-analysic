@@ -1,5 +1,4 @@
 import fetch from 'node-fetch';
-import {BigNumber} from "@ethersproject/bignumber";
 import handleNewBuyRequest from "./lib/tx/newBuyRequest.js";
 import handleCancelBuyRequest from "./lib/tx/cancelBuyRequest.js";
 import handleAdd from "./lib/tx/add.js";
@@ -109,20 +108,19 @@ class BlockchainData {
         if (data.result.length === 0) {
           break
         }
-        // allTx.push(...data.result)
         data.result.forEach((tx) => {
           allTxSet.add(tx)
         })
         console.log('--fetched tx from', startblock, 'to', data.result[data.result.length - 1].blockNumber, 'done', data.result.length, 'tx')
         if (data.result.length < 10000) {
-          startblock = Number(data.result[data.result.length - 1].blockNumber) + 1
+          break;
         } else {
           startblock = Number(data.result[data.result.length - 1].blockNumber)
         }
         await new Promise((resolve) => {
           setTimeout(() => {
             resolve()
-          }, 3000)
+          }, 1000)
         })
       } catch (e) {
         console.log('--fetch tx failed')
@@ -150,22 +148,22 @@ class BlockchainData {
         if (data.result.length === 0) {
           break
         }
+        if (startblock > parseInt(data.result[data.result.length - 1].blockNumber, 16)) {
+          break
+        }
         data.result.forEach((log) => {
           allLogSet.add(log)
         })
-        console.log('--fetched log from', startblock, 'to', BigNumber.from(data.result[data.result.length - 1].blockNumber).toNumber(), 'done', data.result.length, 'log')
-        if (startblock > BigNumber.from(data.result[data.result.length - 1].blockNumber).toNumber()) {
-          break
-        }
+        console.log('--fetched log from', startblock, 'to', parseInt(data.result[data.result.length - 1].blockNumber, 16), 'done', data.result.length, 'log')
         if (data.result.length < 1000) {
-          startblock = BigNumber.from(data.result[data.result.length - 1].blockNumber).toNumber() + 1
+          break
         } else {
-          startblock = BigNumber.from(data.result[data.result.length - 1].blockNumber).toNumber()
+          startblock = parseInt(data.result[data.result.length - 1].blockNumber, 16)
         }
         await new Promise((resolve) => {
           setTimeout(() => {
             resolve()
-          }, 3000)
+          }, 1000)
         })
       } catch (e) {
         console.log('--fetch log failed')
