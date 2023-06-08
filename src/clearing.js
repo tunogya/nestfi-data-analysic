@@ -1,5 +1,6 @@
 import knexInstance from "./lib/db.js";
 import dotenv from 'dotenv';
+import moment from "moment";
 
 dotenv.config();
 
@@ -86,14 +87,13 @@ class Clearing {
       return
     }
     
-    const start = new Date(date + 'T08:00:00.000Z')
-    const end = new Date(start.getTime() + 24 * 60 * 60 * 1000)
+    const start = moment(date)
+    const end = moment(date).add(1, 'days')
     
-    console.log('clearing future for kol\n--start:', start, 'end:', end)
+    console.log('clearing future for kol\n--start:', start.format('YYYY-MM-DDTHH:mm:ssZ'), 'end:', end.format('YYYY-MM-DDTHH:mm:ssZ'))
     
     const orders = await knexInstance('f_future_trading')
-        .where('timeStamp', '>=', start)
-        .where('timeStamp', '<', end)
+        .whereBetween('timeStamp', [start.format('YYYY-MM-DDTHH:mm:ssZ'), end.format('YYYY-MM-DDTHH:mm:ssZ')])
         .where('chainId', this.chainId)
         .where('status', true)
         .whereIn('orderType', ['MARKET_CLOSE_FEE', 'TP_ORDER_FEE', 'SL_ORDER_FEE',
