@@ -25,9 +25,9 @@ const handleSellLog = async (log, chainId) => {
     
     // 获取实际开单时的价格
     const open_orders = await knexInstance('f_future_trading')
-      .where('positionIndex', positionIndex)
-      .whereIn('orderType', ['MARKET_ORDER_FEE', 'LIMIT_ORDER_FEE'])
-      .andWhere('status', true);
+        .where('positionIndex', positionIndex)
+        .whereIn('orderType', ['MARKET_ORDER_FEE', 'LIMIT_ORDER_FEE'])
+        .andWhere('status', true);
     
     if (open_orders.length === 0) {
       return
@@ -53,9 +53,10 @@ const handleSellLog = async (log, chainId) => {
     
     try {
       const orders = await knexInstance('f_future_trading')
-        .where('positionIndex', positionIndex)
-        .andWhere('orderType', 'MARKET_CLOSE_REQUEST')
-        .andWhere('status', true);
+          .where('positionIndex', positionIndex)
+          .where('chainId', chainId)
+          .andWhere('orderType', 'MARKET_CLOSE_REQUEST')
+          .andWhere('status', true);
       // 判断是否是通过止盈止损来关单的，如果是则需要额外扣除15执行费
       if (orders.length > 0) {
         // 用户市价卖出
