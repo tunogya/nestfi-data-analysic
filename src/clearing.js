@@ -87,13 +87,13 @@ class Clearing {
       return
     }
     
-    const start = moment(date)
-    const end = moment(date).add(1, 'days')
+    const start = moment(date).format('YYYY-MM-DDTHH:mm:ssZ')
+    const end = moment(date).add(1, 'days').format('YYYY-MM-DDTHH:mm:ssZ')
     
-    console.log('clearing future for kol\n--start:', start.format('YYYY-MM-DDTHH:mm:ssZ'), 'end:', end.format('YYYY-MM-DDTHH:mm:ssZ'))
+    console.log('clearing future for kol\n--start:', start, 'end:', end)
     
     const orders = await knexInstance('f_future_trading')
-        .whereBetween('timeStamp', [start.format('YYYY-MM-DDTHH:mm:ssZ'), end.format('YYYY-MM-DDTHH:mm:ssZ')])
+        .whereBetween('timeStamp', [start, end])
         .where('chainId', this.chainId)
         .where('status', true)
         .whereIn('orderType', ['MARKET_CLOSE_FEE', 'TP_ORDER_FEE', 'SL_ORDER_FEE',
