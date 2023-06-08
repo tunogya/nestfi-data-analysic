@@ -127,11 +127,8 @@ class Settlement {
   console.log('bsc executed finally:' + new Date());
   // await scroll.handleYesterday()
   // console.log('scroll executed finally:' + new Date());
+  
+  // bsc.handleHistory().catch(e => {
+  //   console.log('clearing history error', e)
+  // })
 })()
-
-// settlement.handleHistory().catch(e => {
-//   console.log('clearing history error', e)
-// }).finally(() => {
-//   console.log('executed finally:' + new Date())
-//   process.exit(0)
-// })
