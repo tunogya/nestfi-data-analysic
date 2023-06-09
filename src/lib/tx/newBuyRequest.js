@@ -41,15 +41,18 @@ const handleNewBuyRequest = async (tx, chainId) => {
   
   if (exist) {
     // update status
-    await knexInstance('f_future_trading')
-        .where({
-          hash,
-          chainId,
-          walletAddress,
-        })
-        .update({
-          status
-        })
+    if (exist.status !== status) {
+      await knexInstance('f_future_trading')
+          .where({
+            hash,
+            chainId,
+            walletAddress,
+          })
+          .update({
+            status
+          })
+      return;
+    }
     return;
   }
   
