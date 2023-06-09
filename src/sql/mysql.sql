@@ -88,9 +88,9 @@ CREATE TABLE IF NOT EXISTS B_SETTLEMENT
     settlementCurrency varchar(20)    NOT NULL,
     type               varchar(20),
     hash               varchar(66),
-    status             boolean,
-    UNIQUE (date, walletAddress, chainId, type)
-)
+    status             boolean
+--     UNIQUE (date, walletAddress, chainId, type)
+);
 
 -- 创建工资表
 DROP TABLE IF EXISTS f_wages CASCADE;
@@ -126,4 +126,4 @@ CREATE TABLE IF NOT EXISTS f_market
     remark             varchar(200),
     hash               varchar(66),
     status             boolean
-)
+);
