@@ -39,7 +39,7 @@ const handleNewBuyRequest = async (tx, chainId) => {
       })
       .first();
   
-  if (exist) {
+  if (exist || status === false) {
     return;
   }
   
