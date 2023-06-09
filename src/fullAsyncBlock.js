@@ -7,20 +7,9 @@ dotenv.config();
   const bsc = new FullAsyncBlock(56);
   const scroll = new FullAsyncBlock(534353);
   
-  while (true) {
-    await bsc.run()
-    console.log('bsc executed finally:' + new Date());
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve()
-      }, 1000)
-    })
-    await scroll.run()
-    console.log('scroll executed finally:' + new Date());
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve()
-      }, 1000)
-    })
-  }
+  await bsc.run()
+  console.log('bsc executed finally:' + new Date());
+  await scroll.run()
+  console.log('scroll executed finally:' + new Date());
+  process.exit(0)
 })();
