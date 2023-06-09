@@ -5,8 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "asyncBlock": "pm2 start src/asyncBlock.js",
-    "cronClearing": "pm2 start src/clearing.js --cron '0 8 * * *'",
-    "cronSettlement": "pm2 start src/settlement.js --cron '0 9 * * *'"
+    "cronFullAsync": "pm2 start src/settlement.js --cron '0 8 * * *'"
   },
   "dependencies": {
     "@ethersproject/bignumber": "^5.7.0",
