@@ -316,4 +316,104 @@ class AsyncBlock {
   }
 }
 
+class FullAsyncBlock {
+  constructor(CHAINID) {
+    this.blockchainData = new BlockchainData(CHAINID);
+  }
+  
+  async run() {
+    console.log('start execute', new Date());
+    // const startBlockSucceed = await this.blockchainData.fetchStartBlock();
+    // if (!startBlockSucceed) {
+    //   console.log('main function executed failed')
+    //   process.exit(0)
+    // }
+    const endBlockSucceed = await this.blockchainData.fetchEndBlock();
+    if (!endBlockSucceed) {
+      console.log('main function executed failed')
+      process.exit(0)
+    }
+    console.log('--start fetching all tx')
+    const allTx = await this.blockchainData.fetchAllTx();
+    console.log('--fetched', allTx.length, 'tx done\n')
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve()
+      }, 1000)
+    })
+    const newBuyRequestTopic = '0xbf4cbb4fa8c0e1d1155a78077bea3d41807ceece161cfae79165e71b82bbeee1'
+    console.log('--start fetching newBuyRequest log')
+    const allNewBuyRequestLog = await this.blockchainData.fetchAllLogsOf(newBuyRequestTopic);
+    console.log('--fetched', allNewBuyRequestLog.length, 'newBuyRequest log done\n')
+    const buyTopic = '0xf7735c8cb2a65788ca663fc8415b7c6a66cd6847d58346d8334e8d52a599d3df'
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve()
+      }, 1000)
+    })
+    console.log('--start fetching buy log')
+    const allBuyLog = await this.blockchainData.fetchAllLogsOf(buyTopic);
+    console.log('--fetched', allBuyLog.length, 'buy log done\n')
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve()
+      }, 1000)
+    })
+    const liquidateTopic = '0xf2bcfabb628d3e0f92291f1e0bc5f2322f8ac3af9e187670152968100e6b60a6'
+    console.log('--start fetching liquidate log')
+    const allLiquidateLog = await this.blockchainData.fetchAllLogsOf(liquidateTopic);
+    console.log('--fetched', allLiquidateLog.length, 'liquidate log done\n')
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve()
+      }, 1000)
+    })
+    const sellTopic = '0xb69e24112cb4483e933dc3bda2d474e8d511e1d7058a983fe98a7d5d78fb9743'
+    console.log('--start fetching sell log')
+    const allSellLog = await this.blockchainData.fetchAllLogsOf(sellTopic);
+    console.log('--fetched', allSellLog.length, 'sell log done\n')
+    console.log('handle all newBuyRequest tx...')
+    for (const tx of allTx) {
+      const methodId = tx.input.slice(0, 10) || tx.methodId;
+      if (methodId === '0x4a907404' || methodId === '0x1e6be550') {
+        await this.blockchainData.handleTx(tx);
+      }
+    }
+    console.log('--handle all newBuyRequest tx done\n')
+    console.log('handle all newBuyRequest log...')
+    for (const log of allNewBuyRequestLog) {
+      await this.blockchainData.handleNewBuyRequestLog(log);
+    }
+    console.log('--handle all newBuyRequest log done\n')
+    console.log('handle all other tx...')
+    for (const tx of allTx) {
+      const methodId = tx.input.slice(0, 10) || tx.methodId;
+      if (methodId !== '0x4a907404') {
+        await this.blockchainData.handleTx(tx);
+      }
+    }
+    console.log('--handle all other tx done\n')
+    console.log('handle all buy log...')
+    for (const log of allBuyLog) {
+      await this.blockchainData.handleBuyLog(log);
+    }
+    console.log('--handle all buy log done\n')
+    console.log('handle all liquidate log...')
+    for (const log of allLiquidateLog) {
+      await this.blockchainData.handleLiquidateLog(log);
+    }
+    console.log('--handle all liquidate log done\n')
+    
+    console.log('handle all sell log...')
+    for (const log of allSellLog) {
+      await this.blockchainData.handleSellLog(log);
+    }
+    console.log('--handle all sell log done\n')
+  }
+}
+
 export default AsyncBlock;
+
+export {
+  FullAsyncBlock,
+}
