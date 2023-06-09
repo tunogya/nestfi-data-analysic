@@ -1,5 +1,7 @@
 import dotenv from 'dotenv';
 import {FullAsyncBlock} from "./asyncBlock.js";
+import Clearing from "./clearing.js";
+import Settlement from "./settlement.js";
 
 dotenv.config();
 
@@ -11,5 +13,12 @@ dotenv.config();
   console.log('bsc executed finally:' + new Date());
   await scroll.run()
   console.log('scroll executed finally:' + new Date());
-  process.exit(0)
+  
+  const bscClearing = new Clearing(56);
+  await bscClearing.handleYesterday();
+  console.log('bscClearing executed finally:' + new Date());
+  
+  const bscSettlement = new Settlement(56);
+  await bscSettlement.handleYesterday();
+  console.log('bscSettlement executed finally:' + new Date());
 })();

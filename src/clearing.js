@@ -188,21 +188,23 @@ class Clearing {
   }
 }
 
-(async () => {
-  const bsc = new Clearing(56);
-  // const scroll = new ClearingFuture(534353);
+export default Clearing
 
-  bsc.handleYesterday().then(() => {
-    console.log('bsc executed finally:' + new Date());
-  })
-  // scroll.handleYesterday().then(() => {
-  //   console.log('scroll executed finally:' + new Date());
-  // })
-  
-  // bsc.handleHistory().catch(e => {
-  //   console.log('clearing history error', e)
-  // }).finally(() => {
-  //   console.log('executed finally:' + new Date())
-  //   process.exit(0)
-  // })
-})();
+// (async () => {
+//   const bsc = new Clearing(56);
+//   // const scroll = new ClearingFuture(534353);
+//
+//   bsc.handleYesterday().then(() => {
+//     console.log('bsc executed finally:' + new Date());
+//   })
+//   // scroll.handleYesterday().then(() => {
+//   //   console.log('scroll executed finally:' + new Date());
+//   // })
+//
+//   // bsc.handleHistory().catch(e => {
+//   //   console.log('clearing history error', e)
+//   // }).finally(() => {
+//   //   console.log('executed finally:' + new Date())
+//   //   process.exit(0)
+//   // })
+// })();
