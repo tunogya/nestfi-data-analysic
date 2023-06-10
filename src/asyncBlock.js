@@ -37,11 +37,7 @@ class BlockchainData {
           .select('blockNumber')
           .where('chainId', this.chainId)
           .orderBy('blockNumber', 'desc')
-          .limit(1);
-      const res2 = await knexInstance('f_future_price')
-          .select('blockNumber')
-          .where('chainId', this.chainId)
-          .orderBy('blockNumber', 'desc')
+          .offset(5)
           .limit(1);
       const res3 = await knexInstance('f_future_trading')
           .select('blockNumber')
@@ -50,7 +46,7 @@ class BlockchainData {
           .where('status', true)
           .orderBy('blockNumber', 'asc')
           .limit(1);
-      if (res1.length === 0 || res2.length === 0) {
+      if (res1.length === 0) {
         this.startBlock = 0;
       } else {
         if (res3.length !== 0) {
@@ -58,7 +54,7 @@ class BlockchainData {
           this.startBlock = res3[0].blockNumber;
           return true;
         }
-        this.startBlock = Math.max(res1[0].blockNumber, res2[0].blockNumber) + 1;
+        this.startBlock = res1[0].blockNumber + 1;
       }
       console.log('--set startblock to', this.startBlock, 'done\n')
       return true;
