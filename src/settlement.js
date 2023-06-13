@@ -100,13 +100,6 @@ class Settlement {
     }
   }
   
-  async handleYesterday() {
-    let yesterday = new Date()
-    yesterday.setDate(yesterday.getDate() - 1)
-    yesterday = yesterday.toISOString().slice(0, 10)
-    await this.settle(yesterday)
-  }
-  
   async handleHistory() {
     let yesterday = new Date()
     yesterday.setDate(yesterday.getDate() - 1)
@@ -121,16 +114,3 @@ class Settlement {
 
 export default Settlement
 
-// (async () => {
-//   const bsc = new Settlement(56);
-//   // const scroll = new Settlement(534353);
-//
-//   await bsc.handleYesterday();
-//   console.log('bsc executed finally:' + new Date());
-//   // await scroll.handleYesterday()
-//   // console.log('scroll executed finally:' + new Date());
-//
-//   // bsc.handleHistory().catch(e => {
-//   //   console.log('clearing history error', e)
-//   // })
-// })()

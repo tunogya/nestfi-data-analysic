@@ -15,10 +15,10 @@ dotenv.config();
   console.log('scroll executed finally:' + new Date());
   
   const bscClearing = new Clearing(56);
-  await bscClearing.handleYesterday();
+  await bscClearing.handleHistory();
   console.log('bscClearing executed finally:' + new Date());
   
   const bscSettlement = new Settlement(56);
-  await bscSettlement.handleYesterday();
+  await bscSettlement.handleHistory();
   console.log('bscSettlement executed finally:' + new Date());
 })();

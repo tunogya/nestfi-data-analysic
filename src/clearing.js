@@ -169,13 +169,6 @@ class Clearing {
     }
   }
   
-  async handleYesterday() {
-    let yesterday = new Date()
-    yesterday.setDate(yesterday.getDate() - 1)
-    yesterday = yesterday.toISOString().slice(0, 10)
-    await this.clearing(yesterday)
-  }
-  
   async handleHistory() {
     let yesterday = new Date()
     yesterday.setDate(yesterday.getDate() - 1)
@@ -189,22 +182,3 @@ class Clearing {
 }
 
 export default Clearing
-
-// (async () => {
-//   const bsc = new Clearing(56);
-//   // const scroll = new ClearingFuture(534353);
-//
-//   bsc.handleYesterday().then(() => {
-//     console.log('bsc executed finally:' + new Date());
-//   })
-//   // scroll.handleYesterday().then(() => {
-//   //   console.log('scroll executed finally:' + new Date());
-//   // })
-//
-//   // bsc.handleHistory().catch(e => {
-//   //   console.log('clearing history error', e)
-//   // }).finally(() => {
-//   //   console.log('executed finally:' + new Date())
-//   //   process.exit(0)
-//   // })
-// })();
