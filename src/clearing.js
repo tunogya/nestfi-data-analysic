@@ -134,10 +134,14 @@ class Clearing {
             .where('status', 'invited')
         console.log('--find relationship:', relationshipsWithoutBlacklist.length)
         const l1clearingDataWithoutBlacklist = this.getClearingData(orders, relationshipsWithoutBlacklist, 1, true)
-        const l2clearingDataWithoutBlacklist = this.getClearingData(orders, relationshipsWithoutBlacklist, 2, true)
+        const cmClearingDataWithoutBlacklist = this.getClearingData(orders, relationshipsWithoutBlacklist, 3, false)
+        const signalClearingDataWithoutBlacklist = this.getClearingData(orders, relationshipsWithoutBlacklist, 4, false)
+        const kol5ClearingDataWithoutBlacklist = this.getClearingData(orders, relationshipsWithoutBlacklist, 5, false)
         try {
           await this.insertClearingData(l1clearingDataWithoutBlacklist, date, trx)
-          await this.insertClearingData(l2clearingDataWithoutBlacklist, date, trx)
+          await this.insertClearingData(cmClearingDataWithoutBlacklist, date, trx)
+          await this.insertClearingData(signalClearingDataWithoutBlacklist, date, trx)
+          await this.insertClearingData(kol5ClearingDataWithoutBlacklist, date, trx)
         } catch (e) {
           console.log('insert clearing data error:', e)
           return
