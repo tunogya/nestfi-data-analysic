@@ -151,10 +151,12 @@ class Clearing {
             // 初步筛选出有效期内的邀请关系
             .where('_createTime', '<=', end)
             .where('status', 'invited')
-        const l1clearingDataOfBlacklist = this.getClearingData(orders, relationshipsOfBlacklist, 1, false)
-        const l2clearingDataOfBlacklist = this.getClearingData(orders, relationshipsOfBlacklist, 2, false)
-        await this.insertClearingData(l1clearingDataOfBlacklist, date, trx)
-        await this.insertClearingData(l2clearingDataOfBlacklist, date, trx)
+        const l1ClearingDataOfBlacklist = this.getClearingData(orders, relationshipsOfBlacklist, 1, false)
+        const cmClearingDataOfBlacklist = this.getClearingData(orders, relationshipsOfBlacklist, 3, false)
+        const signalClearingDataOfBlacklist = this.getClearingData(orders, relationshipsOfBlacklist, 4, false)
+        await this.insertClearingData(l1ClearingDataOfBlacklist, date, trx)
+        await this.insertClearingData(cmClearingDataOfBlacklist, date, trx)
+        await this.insertClearingData(signalClearingDataOfBlacklist, date, trx)
       }
       await trx('f_future_trading')
           .whereIn('_id', orders.map(order => order._id))
