@@ -134,9 +134,9 @@ class Clearing {
             .where('status', 'invited')
         console.log('--find relationship:', relationshipsWithoutBlacklist.length)
         const l1clearingDataWithoutBlacklist = this.getClearingData(orders, relationshipsWithoutBlacklist, 1, true)
-        const cmClearingDataWithoutBlacklist = this.getClearingData(orders, relationshipsWithoutBlacklist, 3, false)
-        const signalClearingDataWithoutBlacklist = this.getClearingData(orders, relationshipsWithoutBlacklist, 4, false)
-        const kol5ClearingDataWithoutBlacklist = this.getClearingData(orders, relationshipsWithoutBlacklist, 5, false)
+        const cmClearingDataWithoutBlacklist = this.getClearingData(orders, relationshipsWithoutBlacklist, 3, true)
+        const signalClearingDataWithoutBlacklist = this.getClearingData(orders, relationshipsWithoutBlacklist, 4, true)
+        const kol5ClearingDataWithoutBlacklist = this.getClearingData(orders, relationshipsWithoutBlacklist, 5, true)
         try {
           await this.insertClearingData(l1clearingDataWithoutBlacklist, date, trx)
           await this.insertClearingData(cmClearingDataWithoutBlacklist, date, trx)
