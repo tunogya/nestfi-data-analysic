@@ -102,7 +102,7 @@ class Settlement {
   
   async handleHistory() {
     let today = new Date()
-    let date = new Date('2023-04-06T00:00:00.000Z')
+    let date = new Date('2023-04-06T08:00:00.000Z')
     while (date < today) {
       const dateString = date.toISOString().slice(0, 10)
       await this.settle(dateString)
