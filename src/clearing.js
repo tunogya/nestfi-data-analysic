@@ -174,10 +174,9 @@ class Clearing {
   }
   
   async handleHistory() {
-    let yesterday = new Date()
-    yesterday.setDate(yesterday.getDate() - 1)
+    let today = new Date()
     let date = new Date('2023-04-06T08:00:00.000Z')
-    while (date < yesterday) {
+    while (date < today) {
       const dateString = date.toISOString().slice(0, 10)
       await this.clearing(dateString)
       date.setDate(date.getDate() + 1)
