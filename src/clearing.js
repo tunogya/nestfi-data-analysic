@@ -154,9 +154,11 @@ class Clearing {
         const l1ClearingDataOfBlacklist = this.getClearingData(orders, relationshipsOfBlacklist, 1, false)
         const cmClearingDataOfBlacklist = this.getClearingData(orders, relationshipsOfBlacklist, 3, false)
         const signalClearingDataOfBlacklist = this.getClearingData(orders, relationshipsOfBlacklist, 4, false)
+        const kol5ClearingDataOfBlacklist = this.getClearingData(orders, relationshipsOfBlacklist, 5, false)
         await this.insertClearingData(l1ClearingDataOfBlacklist, date, trx)
         await this.insertClearingData(cmClearingDataOfBlacklist, date, trx)
         await this.insertClearingData(signalClearingDataOfBlacklist, date, trx)
+        await this.insertClearingData(kol5ClearingDataOfBlacklist, date, trx)
       }
       await trx('f_future_trading')
           .whereIn('_id', orders.map(order => order._id))
