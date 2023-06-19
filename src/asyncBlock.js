@@ -329,7 +329,9 @@ class FullAsyncBlock {
       console.log('main function executed failed')
       process.exit(0)
     }
-    console.log('--start fetching all tx')
+    // start block is 1 week ago, 86400 * 7 / 3 = 201600
+    this.blockchainData.startBlock = this.blockchainData.endBlock - 201600;
+    console.log('--start fetching all tx of 1 week')
     const allTx = await this.blockchainData.fetchAllTx();
     console.log('--fetched', allTx.length, 'tx done\n')
     await new Promise((resolve) => {
