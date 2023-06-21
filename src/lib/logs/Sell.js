@@ -26,6 +26,7 @@ const handleSellLog = async (log, chainId) => {
     // 获取实际开单时的价格
     const open_orders = await knexInstance('f_future_trading')
         .where('positionIndex', positionIndex)
+        .where('chainId', chainId)
         .whereIn('orderType', ['MARKET_ORDER_FEE', 'LIMIT_ORDER_FEE'])
         .andWhere('status', true);
     
