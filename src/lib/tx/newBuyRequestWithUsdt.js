@@ -51,18 +51,19 @@ const handleNewBuyRequestWithUsdt = async (tx, chainId) => {
       .first();
   
   if (exist) {
-    if (exist.status !== status) {
-      await knexInstance('f_future_trading')
-          .where({
-            hash,
-            chainId,
-            walletAddress,
-          })
-          .update({
-            status
-          })
-      return;
-    }
+    // update status
+    await knexInstance('f_future_trading')
+        .where({
+          hash,
+          chainId,
+          walletAddress,
+        })
+        .update({
+          status,
+          orderPrice,
+          stopLossPrice,
+          takeProfitPrice,
+        })
     return;
   }
   
