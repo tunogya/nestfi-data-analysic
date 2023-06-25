@@ -6,8 +6,8 @@ const handleStopPrice = async (tx, chainId) => {
   const {blockNumber, gasFee, hash, status, timeStamp, walletAddress} = getDataFromTx(tx);
   // Function: updateStopPrice(uint256 orderIndex,uint256 stopProfitPrice,uint256 stopLossPrice)
   const positionIndex = BigNumber.from('0x' + tx.input.slice(10, 74)).toNumber();
-  const takeProfitPrice = BigNumber.from('0x' + tx.input.slice(74, 138)).div(BigNumber.from(10).pow(16)).toNumber() / 100;
-  const stopLossPrice = BigNumber.from('0x' + tx.input.slice(138, 202)).div(BigNumber.from(10).pow(16)).toNumber() / 100;
+  const takeProfitPrice = BigNumber.from('0x' + tx.input.slice(74, 138)).div(BigNumber.from(10).pow(12)).toNumber() / 1000000;
+  const stopLossPrice = BigNumber.from('0x' + tx.input.slice(138, 202)).div(BigNumber.from(10).pow(12)).toNumber() / 1000000;
   
   const order = await getPreviousOrderState(positionIndex, chainId, timeStamp);
   if (!order) return;

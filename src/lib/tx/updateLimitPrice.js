@@ -6,7 +6,7 @@ const handleUpdateLimitPrice = async (tx, chainId) => {
   const {blockNumber, gasFee, hash, status, timeStamp, walletAddress} = getDataFromTx(tx);
   // Function: updateLimitPrice(uint256 orderIndex,uint256 limitPrice)
   const positionIndex = BigNumber.from('0x' + tx.input.slice(10, 74)).toNumber();
-  const orderPrice = BigNumber.from('0x' + tx.input.slice(74, 138)).div(BigNumber.from(10).pow(16)).toNumber() / 100;
+  const orderPrice = BigNumber.from('0x' + tx.input.slice(74, 138)).div(BigNumber.from(10).pow(12)).toNumber() / 1000000;
   
   const order = await getPreviousOrderState(positionIndex, chainId, timeStamp);
   if (!order) return;
