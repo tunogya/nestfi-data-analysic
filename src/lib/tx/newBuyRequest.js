@@ -30,55 +30,32 @@ const handleNewBuyRequest = async (tx, chainId) => {
   const stopLossPrice = BigNumber.from('0x' + tx.input.slice(458, 522)).div(BigNumber.from(10).pow(12)).toNumber() / 1000000;
   const takeProfitPrice = BigNumber.from('0x' + tx.input.slice(394, 458)).div(BigNumber.from(10).pow(12)).toNumber() / 1000000;
   
-  // 判断该记录是否已经存在
-  const exist = await knexInstance('f_future_trading')
-      .where({
-        hash,
-        chainId,
-        walletAddress,
-      })
-      .first();
-  
-  if (exist) {
-    // update status
-    if (exist.status !== status) {
-      await knexInstance('f_future_trading')
-          .where({
-            hash,
-            chainId,
-            walletAddress,
-          })
-          .update({
-            status
-          })
-      return;
-    }
-    return;
-  }
-  
   try {
-    await knexInstance('f_future_trading').insert({
-      blockNumber,
-      hash,
-      timeStamp: new Date(timeStamp * 1000),
-      gasFee,
-      product,
-      chainId,
-      positionIndex,
-      leverage,
-      orderPrice,
-      currency: 'NEST',
-      orderType: limit ? "LIMIT_REQUEST" : "MARKET_REQUEST",
-      direction,
-      margin: null,
-      volume: null,
-      stopLossPrice,
-      takeProfitPrice,
-      fees: 0,
-      executionFees: 0,
-      walletAddress,
-      status
-    }).onConflict(['hash', 'orderType', 'positionIndex']).ignore()
+    await knexInstance('f_future_trading')
+        .insert({
+          blockNumber,
+          hash,
+          timeStamp: new Date(timeStamp * 1000),
+          gasFee,
+          product,
+          chainId,
+          positionIndex,
+          leverage,
+          orderPrice,
+          currency: 'NEST',
+          orderType: limit ? "LIMIT_REQUEST" : "MARKET_REQUEST",
+          direction,
+          margin: null,
+          volume: null,
+          stopLossPrice,
+          takeProfitPrice,
+          fees: 0,
+          executionFees: 0,
+          walletAddress,
+          status
+        })
+        .onConflict(['hash', 'orderType', 'positionIndex'])
+        .merge()
     // console.log('save FutureTrading success')
   } catch (e) {
     console.log('--save FutureTrading error')
