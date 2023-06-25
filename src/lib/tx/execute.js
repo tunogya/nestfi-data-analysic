@@ -34,7 +34,9 @@ const handleExecute = async (tx, chainId) => {
       dogeprice,
       xrpprice,
       status,
-    }).onConflict(['hash', 'chainId']).ignore()
+    })
+        .onConflict(['hash', 'chainId'])
+        .merge()
   } catch (e) {
     console.log(`save Future Price error`)
   }

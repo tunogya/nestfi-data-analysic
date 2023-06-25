@@ -34,7 +34,9 @@ const handleCancelBuyRequest = async (tx, chainId) => {
       executionFees: 0,
       walletAddress,
       status
-    }).onConflict(['hash', 'orderType', 'positionIndex']).ignore()
+    })
+        .onConflict(['hash', 'orderType', 'positionIndex'])
+        .merge()
   } catch (e) {
     console.log('--save FutureTrading error')
     console.log(e)
