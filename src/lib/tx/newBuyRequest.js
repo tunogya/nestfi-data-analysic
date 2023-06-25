@@ -30,6 +30,32 @@ const handleNewBuyRequest = async (tx, chainId) => {
   const stopLossPrice = BigNumber.from('0x' + tx.input.slice(458, 522)).div(BigNumber.from(10).pow(12)).toNumber() / 1000000;
   const takeProfitPrice = BigNumber.from('0x' + tx.input.slice(394, 458)).div(BigNumber.from(10).pow(12)).toNumber() / 1000000;
   
+  // 判断该记录是否已经存在
+  const exist = await knexInstance('f_future_trading')
+      .where({
+        hash,
+        chainId,
+        walletAddress,
+      })
+      .first();
+  
+  if (exist) {
+    // update status
+    if (exist.status !== status) {
+      await knexInstance('f_future_trading')
+          .where({
+            hash,
+            chainId,
+            walletAddress,
+          })
+          .update({
+            status
+          })
+      return;
+    }
+    return;
+  }
+  
   try {
     await knexInstance('f_future_trading')
         .insert({
