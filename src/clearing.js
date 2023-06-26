@@ -137,11 +137,15 @@ class Clearing {
         const cmClearingDataWithoutBlacklist = this.getClearingData(orders, relationshipsWithoutBlacklist, 3, true)
         const signalClearingDataWithoutBlacklist = this.getClearingData(orders, relationshipsWithoutBlacklist, 4, true)
         const kol5ClearingDataWithoutBlacklist = this.getClearingData(orders, relationshipsWithoutBlacklist, 5, true)
+        const cm2ClearingDataWithoutBlacklist = this.getClearingData(orders, relationshipsWithoutBlacklist, 6, true)
+        const signal2ClearingDataWithoutBlacklist = this.getClearingData(orders, relationshipsWithoutBlacklist, 7, true)
         try {
           await this.insertClearingData(l1clearingDataWithoutBlacklist, date, trx)
           await this.insertClearingData(cmClearingDataWithoutBlacklist, date, trx)
           await this.insertClearingData(signalClearingDataWithoutBlacklist, date, trx)
           await this.insertClearingData(kol5ClearingDataWithoutBlacklist, date, trx)
+          await this.insertClearingData(cm2ClearingDataWithoutBlacklist, date, trx)
+          await this.insertClearingData(signal2ClearingDataWithoutBlacklist, date, trx)
         } catch (e) {
           console.log('insert clearing data error:', e)
           return
@@ -159,10 +163,14 @@ class Clearing {
         const cmClearingDataOfBlacklist = this.getClearingData(orders, relationshipsOfBlacklist, 3, false)
         const signalClearingDataOfBlacklist = this.getClearingData(orders, relationshipsOfBlacklist, 4, false)
         const kol5ClearingDataOfBlacklist = this.getClearingData(orders, relationshipsOfBlacklist, 5, false)
+        const cm2ClearingDataOfBlacklist = this.getClearingData(orders, relationshipsOfBlacklist, 6, false)
+        const signal2ClearingDataOfBlacklist = this.getClearingData(orders, relationshipsOfBlacklist, 7, false)
         await this.insertClearingData(l1ClearingDataOfBlacklist, date, trx)
         await this.insertClearingData(cmClearingDataOfBlacklist, date, trx)
         await this.insertClearingData(signalClearingDataOfBlacklist, date, trx)
         await this.insertClearingData(kol5ClearingDataOfBlacklist, date, trx)
+        await this.insertClearingData(cm2ClearingDataOfBlacklist, date, trx)
+        await this.insertClearingData(signal2ClearingDataOfBlacklist, date, trx)
       }
       await trx('f_future_trading')
           .whereIn('_id', orders.map(order => order._id))
