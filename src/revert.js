@@ -48,6 +48,6 @@ class Revert {
 
 (async () => {
   const revert = new Revert()
-  await revert.revert('2023-04-06', '2023-07-01')
+  await revert.revert('2023-04-01', '2023-07-01')
   process.exit(0)
 })();
