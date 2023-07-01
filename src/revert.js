@@ -32,22 +32,22 @@ class Revert {
     console.log('清空交易数据成功')
     // 清空清算数据
     //
-    // await knexInstance('b_clearing_kol')
-    //     .where('date', '>=', startDate)
-    //     .where('date', '<=', endDate)
-    //     .del()
-    // console.log('清空清算数据成功')
+    await knexInstance('b_clearing_kol')
+        .where('date', '>=', startDate)
+        .where('date', '<=', endDate)
+        .del()
+    console.log('清空清算数据成功')
     // // 清空结算数据
-    // await knexInstance('b_settlement')
-    //     .where('date', '>=', startDate)
-    //     .where('date', '<=', endDate)
-    //     .del()
+    await knexInstance('b_settlement')
+        .where('date', '>=', startDate)
+        .where('date', '<=', endDate)
+        .del()
     console.log('清空结算数据成功')
   }
 }
 
 (async () => {
   const revert = new Revert()
-  await revert.revert('2023-05-10', '2023-05-17')
+  await revert.revert('2023-04-6', '2023-07-1')
   process.exit(0)
 })();
